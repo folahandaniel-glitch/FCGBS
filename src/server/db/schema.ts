@@ -1243,3 +1243,85 @@ export const aiRequests = pgTable("ai_requests", {
 });
 
 export type SchemaUser = typeof users.$inferSelect;
+
+/* ------------------------------------------------- Bible study, teachings & materials */
+
+/** A signed-in learner's own Bible notes, highlights and bookmarks (private to the user). */
+export const bibleNotes = pgTable(
+  "bible_notes",
+  {
+    id: id(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    book: integer("book").notNull(),
+    chapter: integer("chapter").notNull(),
+    verse: integer("verse").notNull(),
+    kind: text("kind").notNull().default("NOTE"), // NOTE | HIGHLIGHT | BOOKMARK
+    color: text("color"),
+    body: text("body"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("bible_notes_user_idx").on(t.userId, t.book, t.chapter)],
+);
+
+/** Teaching tracks: Apostolic, Pastoral, Evangelical, Prophetic, Revival & Reformation … — administrators add more. */
+export const teachingTracks = pgTable("teaching_tracks", {
+  id: id(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  tagline: text("tagline"),
+  description: text("description"),
+  colour: text("colour").notNull().default("royal"), // royal | gold | emerald | rose | violet | amber | teal | sky
+  icon: text("icon"),
+  sort: integer("sort").notNull().default(0),
+  status: contentStatusEnum("status").notNull().default("PUBLISHED"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+export const teachings = pgTable(
+  "teachings",
+  {
+    id: id(),
+    trackId: uuid("track_id").notNull().references(() => teachingTracks.id, { onDelete: "cascade" }),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    summary: text("summary"),
+    body: text("body"),
+    scriptures: text("scriptures"), // one reference per line, e.g. "Acts 2:1-4"
+    level: text("level").notNull().default("FOUNDATION"), // FOUNDATION | INTERMEDIATE | ADVANCED
+    minutes: integer("minutes").notNull().default(10),
+    author: text("author"),
+    audioUrl: text("audio_url"),
+    videoUrl: text("video_url"),
+    audioAssetId: uuid("audio_asset_id"),
+    imageAssetId: uuid("image_asset_id"),
+    featured: boolean("featured").notNull().default(false),
+    audience: text("audience").notNull().default("PUBLIC"), // PUBLIC | STUDENTS
+    sort: integer("sort").notNull().default(0),
+    status: contentStatusEnum("status").notNull().default("PUBLISHED"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("teachings_track_idx").on(t.trackId, t.sort), index("teachings_status_idx").on(t.status)],
+);
+
+/** Downloadable or linked study materials (DOCX, PPTX, PDF, MP3, video, web links) attached to a course, lesson or teaching. */
+export const materials = pgTable(
+  "materials",
+  {
+    id: id(),
+    title: text("title").notNull(),
+    kind: text("kind").notNull().default("URL"), // PDF | DOCX | PPTX | MP3 | VIDEO | URL | OTHER
+    description: text("description"),
+    courseId: uuid("course_id").references(() => courses.id, { onDelete: "cascade" }),
+    teachingId: uuid("teaching_id").references(() => teachings.id, { onDelete: "cascade" }),
+    assetId: uuid("asset_id"),
+    url: text("url"),
+    audience: text("audience").notNull().default("STUDENTS"), // PUBLIC | STUDENTS
+    sort: integer("sort").notNull().default(0),
+    status: contentStatusEnum("status").notNull().default("PUBLISHED"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("materials_course_idx").on(t.courseId), index("materials_teaching_idx").on(t.teachingId)],
+);

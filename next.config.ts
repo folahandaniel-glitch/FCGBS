@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   serverExternalPackages: ["@node-rs/argon2", "pg", "@electric-sql/pglite", "sharp"],
+  // Bible texts are read from disk at runtime; make sure they ship with the serverless functions.
+  outputFileTracingIncludes: { "/**": ["./data/bible/**"] },
   experimental: {
     serverActions: { bodySizeLimit: "14mb" },
   },

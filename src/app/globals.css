@@ -76,3 +76,16 @@ main { overflow-wrap: break-word; }
 @media (min-width: 1920px) { html { font-size: 112.5%; } }
 @media (min-width: 2560px) { html { font-size: 137.5%; } }
 @media (hover: none) and (pointer: coarse) { a, button, summary, [role="button"] { min-height: 2.5rem; } }
+
+/* Bible reader */
+.bible-text { font-family: Georgia, Cambria, "Times New Roman", serif; line-height: 1.85; }
+.bible-text .vn { font: 700 .62em/1 var(--font-sans); color: var(--color-royal-600); background: var(--color-royal-50); border-radius: .4rem; padding: .2em .45em; margin-right: .4em; cursor: pointer; vertical-align: .35em; }
+.bible-text .vn:hover, .bible-text .vn:focus-visible { background: var(--color-gold-400); color: var(--color-navy-900); }
+.bible-text [data-tags="on"] [data-s], .bible-text[data-tags="on"] [data-s] { cursor: pointer; text-decoration: underline dotted var(--color-gold-500); text-underline-offset: .22em; }
+.bible-text[data-tags="on"] [data-s]:hover { background: var(--color-gold-100); border-radius: 3px; }
+.bible-text em { color: var(--color-muted); }
+.bible-text [data-hl="yellow"] { background: #fef08a; } .bible-text [data-hl="green"] { background: #a7f3d0; }
+.bible-text [data-hl="blue"] { background: #bae6fd; } .bible-text [data-hl="pink"] { background: #fbcfe8; } .bible-text [data-hl="orange"] { background: #fed7aa; }
+.bible-text [data-hl] { border-radius: .4rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.heb { font-family: "SBL Hebrew", "Ezra SIL", "Noto Serif Hebrew", "Times New Roman", serif; line-height: 2.1; }
+.grk { font-family: "Gentium Plus", "Noto Serif", "Times New Roman", serif; line-height: 1.9; }
