@@ -1,0 +1,6 @@
+.env.local
+.data
+.next
+node_modules
+*.tsbuildinfo
+vercel-secrets.txt

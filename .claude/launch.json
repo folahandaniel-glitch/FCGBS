@@ -1,0 +1,1 @@
+{ "version": "0.0.1", "configurations": [ { "name": "fcgbs-db", "runtimeExecutable": "npm", "runtimeArgs": ["run", "db:local"], "port": 5433 }, { "name": "fcgbs", "runtimeExecutable": "npx", "runtimeArgs": ["next", "dev", "-p", "3100"], "port": 3100 } ] }
