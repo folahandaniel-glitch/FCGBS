@@ -8,6 +8,10 @@
  */
 
 export const PERMISSIONS = {
+  // Access codes
+  "codes.view": { group: "Access codes", description: "View access codes and learners' access periods" },
+  "codes.generate": { group: "Access codes", description: "Generate access codes and give learners access" },
+  "codes.manage": { group: "Access codes", description: "Suspend, revoke, restore and adjust access codes and access periods" },
   // Public website & content
   "content.manage": { group: "Website & Content", description: "Edit public pages, carousel, news, events, FAQs and announcements" },
   "content.publish": { group: "Website & Content", description: "Publish content (otherwise it stays Draft/Review)" },
@@ -118,7 +122,7 @@ export const SYSTEM_ROLES: RoleDef[] = [
     name: "Registrar",
     group: "Academic Administration",
     description: "Custodian of academic records: registration, results, transcripts, graduation checks, verification.",
-    permissions: ["users.view", "students.view", "students.edit", "students.status", "faculty.view", "admissions.view", "admissions.register", "calendar.manage", "offerings.manage", "registration.manage", "teaching.any", "grades.approve", "grades.amend", "appeals.manage", "transcripts.issue", "graduation.registrar", "certificates.issue", "certificates.revoke", "ministry.view", "reports.view", "reports.export", "audit.view", "comms.send"],
+    permissions: ["users.view", "students.view", "students.edit", "students.status", "faculty.view", "admissions.view", "admissions.register", "calendar.manage", "offerings.manage", "registration.manage", "teaching.any", "grades.approve", "grades.amend", "appeals.manage", "transcripts.issue", "graduation.registrar", "certificates.issue", "certificates.revoke", "ministry.view", "reports.view", "reports.export", "audit.view", "comms.send", "codes.view", "codes.generate", "codes.manage"],
   },
   {
     key: "dean",
@@ -153,7 +157,7 @@ export const SYSTEM_ROLES: RoleDef[] = [
     name: "Student Affairs Officer",
     group: "Administration",
     description: "Student welfare, standing, discipline and community moderation.",
-    permissions: ["students.view", "students.edit", "students.status", "integrity.manage", "community.moderate", "ministry.view", "comms.send"],
+    permissions: ["students.view", "students.edit", "students.status", "integrity.manage", "community.moderate", "ministry.view", "comms.send", "codes.view"],
   },
   {
     key: "finance",

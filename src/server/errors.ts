@@ -16,6 +16,9 @@ export type ErrorCode =
   | "PASSWORD_CHANGE_REQUIRED"
   | "RULE_VIOLATION"
   | "NOT_CONFIGURED"
+  | "ACCESS_REQUIRED"
+  | "ACCESS_EXPIRED"
+  | "INVALID_CODE"
   | "INTERNAL";
 
 const STATUS: Record<ErrorCode, number> = {
@@ -32,6 +35,9 @@ const STATUS: Record<ErrorCode, number> = {
   PASSWORD_CHANGE_REQUIRED: 403,
   RULE_VIOLATION: 409,
   NOT_CONFIGURED: 503,
+  ACCESS_REQUIRED: 403,
+  ACCESS_EXPIRED: 403,
+  INVALID_CODE: 422,
   INTERNAL: 500,
 };
 
@@ -63,3 +69,5 @@ export function toPublicError(e: unknown): { code: ErrorCode; message: string; s
   console.error("[fcgbs] unexpected error", e instanceof Error ? e.stack ?? e.message : e);
   return { code: "INTERNAL", message: "Something went wrong on our side. Please try again.", status: 500 };
 }
+
+export const NEED_ACCESS_CODE_MESSAGE = "To get an access code, contact the school office, then enter it on your dashboard.";

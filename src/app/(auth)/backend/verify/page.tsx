@@ -13,7 +13,7 @@ export default async function VerifyMfaPage({ searchParams }: { searchParams: Pr
   if (!s) redirect("/backend");
   if (!s.mfaPending) redirect("/admin");
   return (
-    <AuthShell title="Two-factor verification" subtitle="Enter the 6-digit code from your authenticator app, or a recovery code.">
+    <AuthShell title="Two-factor verification" subtitle="Enter the 6-digit code from your authenticator app, or a recovery code." tone="staff">
       <ActionForm action={mfaAction} className="space-y-4">
         <input type="hidden" name="next" value={sp.next ?? ""} />
         <TextField label="Verification code" name="code" inputMode="text" autoComplete="one-time-code" required />

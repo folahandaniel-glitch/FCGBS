@@ -8,6 +8,9 @@ import { enrolmentSummary } from "@/server/services/academics";
 import { learnerContext, myRegistrations } from "@/server/services/learner";
 import { listPosts } from "@/server/services/catalog";
 import { listNotifications } from "@/server/services/notifications";
+import { AccessCard } from "@/components/access/access-card";
+import { accessContact } from "@/server/gate";
+import { getAccessState } from "@/server/services/access";
 
 export default async function StudentHome({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
   const sess = await requireLearnerPage();
@@ -21,9 +24,11 @@ export default async function StudentHome({ searchParams }: { searchParams: Prom
   const progress = prog?.credits ? Math.min(100, (sum.creditsEarned / prog.credits) * 100) : 0;
   const recent = await getDb().select({ code: s.courses.code, title: s.courses.title, grade: s.results.grade, publishedAt: s.results.publishedAt }).from(s.results).innerJoin(s.courseRegistrations, eq(s.courseRegistrations.id, s.results.registrationId)).innerJoin(s.courses, eq(s.courses.id, s.courseRegistrations.courseId)).where(and(eq(s.courseRegistrations.enrolmentId, en.e.id), inArray(s.results.status, ["PUBLISHED", "LOCKED"]))).orderBy(desc(s.results.publishedAt)).limit(4);
   const sp = await searchParams;
+  const [access, contact] = await Promise.all([getAccessState(sess.user.id, sess.user.userType), accessContact()]);
   return (
     <>
       <PageHeader eyebrow={`${en.level} · ${lc.student.studentNumber}`} title={`Welcome, ${sess.user.firstName}`} description={`${en.programme}${lc.term ? ` · ${lc.term.name}` : ""}`} actions={<StatusBadge status={sum.standing} />} />
+      <div className="mb-6"><AccessCard initial={access} contact={contact.contact} note={contact.note} /></div>
       {sp.welcome && <Alert tone="success" className="mb-4">Welcome to FCGBS! Start by registering for your courses.</Alert>}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="CGPA" value={sum.records.some((r) => r.graded) ? sum.cgpa.toFixed(2) : "—"} tone="gold" hint={sum.classification ?? "No published results yet"} />

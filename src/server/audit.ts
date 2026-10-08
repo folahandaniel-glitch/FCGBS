@@ -65,7 +65,9 @@ export type SecurityEventType =
   | "RATE_LIMITED"
   | "MALICIOUS_UPLOAD"
   | "MFA_FAILED"
-  | "VERIFY_ABUSE";
+  | "VERIFY_ABUSE"
+  | "INVALID_ACCESS_CODE"
+  | "CODE_REUSE_ATTEMPT";
 
 export async function securityEvent(
   e: { type: SecurityEventType; severity?: "INFO" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"; userId?: string | null; detail?: unknown },

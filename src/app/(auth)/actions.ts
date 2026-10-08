@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { toPublicError } from "@/server/errors";
 import { clearSessionCookie, getSession, reqCtx, setSessionCookie, type ActionResult } from "@/server/http";
-import { revokeSession } from "@/server/auth/session";
+import { resolveSessionToken, revokeSession } from "@/server/auth/session";
+import { activateCode } from "@/server/services/access";
 import { audit } from "@/server/audit";
 import { bootstrapSuperAdmin, login, registerApplicant, requestPasswordReset, resetPasswordWithToken, verifyMfa } from "@/server/services/auth";
 
@@ -22,7 +23,12 @@ export async function registerAction(_: ActionResult | null, form: FormData): Pr
     await registerApplicant({ ...d, acceptTerms: d.acceptTerms === "on" }, ctx);
     const r = await login({ identifier: d.email, password: d.password }, "public", ctx);
     await setSessionCookie(r.token, r.expiresAt);
-    dest = safeNext(d.next, "/apply");
+    const code = (d.accessCode ?? "").trim();
+    if (code) {
+      // A wrong code must not undo the registration: the person is told and can enter it again on the dashboard.
+      try { const sess = await resolveSessionToken(r.token); if (sess) await activateCode(sess.actor, code, ctx); } catch { dest = "/access?code=failed"; }
+    }
+    dest = dest || safeNext(d.next, "/apply");
   } catch (e) {
     return fail(e);
   }

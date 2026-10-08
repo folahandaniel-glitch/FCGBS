@@ -5,6 +5,7 @@ import { getDb } from "@/server/db";
 import * as s from "@/server/db/schema";
 import { audit } from "@/server/audit";
 import { closeAttempt } from "@/server/services/assessments";
+import { syncExpired } from "@/server/services/access";
 
 /**
  * Daily maintenance (Vercel Cron sends `Authorization: Bearer $CRON_SECRET`):
@@ -21,6 +22,7 @@ export async function GET(req: NextRequest) {
   await db.delete(s.sessions).where(lt(s.sessions.expiresAt, new Date(Date.now() - 7 * 86_400_000)));
   await db.delete(s.passwordResetTokens).where(lt(s.passwordResetTokens.expiresAt, new Date(Date.now() - 86_400_000)));
   await db.execute(sql`delete from rate_limits where window_start < now() - interval '1 day'`);
-  await audit({ action: "system.maintenance", summary: `auto-submitted ${lapsed.length} attempt(s)` });
+  const expiredAccess = await syncExpired();
+  await audit({ action: "system.maintenance", summary: `auto-submitted ${lapsed.length} attempt(s); ${expiredAccess} access period(s) expired` });
   return NextResponse.json({ ok: true, autoSubmitted: lapsed.length });
 }

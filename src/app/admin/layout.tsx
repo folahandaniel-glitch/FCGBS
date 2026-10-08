@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { BookOpen, Building2, CalendarDays, ClipboardList, FileText, GraduationCap, Image as ImageIcon, LayoutDashboard, LibraryBig, LineChart, Newspaper, ScrollText, Settings, ShieldCheck, Users, Wallet, HeartHandshake, Award, Gavel, FlaskConical, Layers } from "lucide-react";
+import { KeyRound, BookOpen, Building2, CalendarDays, ClipboardList, FileText, GraduationCap, Image as ImageIcon, LayoutDashboard, LibraryBig, LineChart, Newspaper, ScrollText, Settings, ShieldCheck, Users, Wallet, HeartHandshake, Award, Gavel, FlaskConical, Layers } from "lucide-react";
 import { AppShell, type NavGroup } from "@/components/shell/app-shell";
 import { can, isStaffType, type Permission, type SuperCapability } from "@/core/permissions";
 import { getBrand } from "@/server/brand";
@@ -14,6 +14,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
   { title: "Admissions & Students", items: [
     { href: "/admin/admissions", label: "Applications", icon: <ClipboardList />, perm: ["admissions.view"] },
     { href: "/admin/students", label: "Students", icon: <GraduationCap />, perm: ["students.view"] },
+    { href: "/admin/access-codes", label: "Access codes", icon: <KeyRound />, perm: ["codes.view"] },
   ] },
   { title: "Academics", items: [
     { href: "/admin/r/programmes", label: "Programmes", icon: <BookOpen />, perm: ["programmes.manage", "curriculum.approve"] },
@@ -41,6 +42,9 @@ const GROUPS: { title: string; items: Item[] }[] = [
   { title: "Website & System", items: [
     { href: "/admin/content", label: "Website content", icon: <Newspaper />, perm: ["content.manage"] },
     { href: "/admin/r/posts", label: "News, events & FAQs", icon: <Newspaper />, perm: ["content.manage"] },
+    { href: "/admin/r/teachings", label: "Teachings", icon: <ScrollText />, perm: ["content.manage"] },
+    { href: "/admin/r/teachingTracks", label: "Teaching tracks", icon: <Layers />, perm: ["content.manage"] },
+    { href: "/admin/r/materials", label: "Study materials", icon: <LibraryBig />, perm: ["courses.manage", "content.manage"] },
     { href: "/admin/branding", label: "Logo & pictures", icon: <ImageIcon />, perm: ["media.manage", "super.settings"] },
     { href: "/admin/settings", label: "Settings", icon: <Settings />, perm: ["settings.academic", "settings.admissions", "super.settings"] },
     { href: "/admin/roles", label: "Roles & permissions", icon: <ShieldCheck />, perm: ["super.roles"] },

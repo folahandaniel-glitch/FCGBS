@@ -24,6 +24,21 @@ export async function seedStructure(db: DB) {
     if (have.length === 0) await db.insert(s.rolePermissions).values(r.permissions.filter((p) => ALL_PERMISSIONS.includes(p)).map((p) => ({ roleId: row.id, permissionKey: p })));
   }
 
+  // Permissions introduced after a deployment: give them to the roles whose defaults include them, exactly once.
+  const [seenRow] = await db.select({ v: s.settings.value }).from(s.settings).where(eq(s.settings.key, "permissionsSeen")).limit(1);
+  // Before this record existed, every permission except the access-code ones was already in the catalogue.
+  const seen = new Set<string>(Array.isArray(seenRow?.v) ? (seenRow.v as string[]) : ALL_PERMISSIONS.filter((p) => !p.startsWith("codes.")));
+  {
+    const fresh = ALL_PERMISSIONS.filter((p) => !seen.has(p));
+    for (const r of SYSTEM_ROLES) {
+      const add = r.permissions.filter((p) => fresh.includes(p));
+      if (!add.length) continue;
+      const [row] = await db.select({ id: s.roles.id }).from(s.roles).where(eq(s.roles.key, r.key));
+      if (row) await db.insert(s.rolePermissions).values(add.map((p) => ({ roleId: row.id, permissionKey: p }))).onConflictDoNothing();
+    }
+  }
+  await db.insert(s.settings).values({ key: "permissionsSeen", value: [...ALL_PERMISSIONS] }).onConflictDoUpdate({ target: s.settings.key, set: { value: [...ALL_PERMISSIONS] } });
+
   // ---- levels, departments, campus
   for (const l of LEVELS) await db.insert(s.programmeLevels).values(l).onConflictDoNothing();
   for (const [i, d] of DEPARTMENTS.entries()) await db.insert(s.departments).values({ ...d, sort: i }).onConflictDoNothing();

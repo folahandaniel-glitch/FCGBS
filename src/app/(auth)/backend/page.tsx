@@ -16,7 +16,7 @@ export default async function BackendPage({ searchParams }: { searchParams: Prom
   const needsSetup = !(await superAdminExists());
   if (needsSetup) {
     return (
-      <AuthShell title="First-time setup" subtitle="Create the Super Admin account. Only the owner e-mail and the setup key from the server can do this." wide>
+      <AuthShell title="First-time setup" subtitle="Create the Super Admin account. Only the owner e-mail and the setup key from the server can do this." wide tone="staff">
         <ActionForm action={setupAction} className="space-y-4">
           <TextField label="Owner email" name="email" type="email" defaultValue={process.env.NODE_ENV === "production" ? "" : ownerEmail()} required />
           <PasswordField label="Setup key" name="setupToken" autoComplete="one-time-code" hint="The SETUP_TOKEN value from the server environment." />
@@ -28,7 +28,7 @@ export default async function BackendPage({ searchParams }: { searchParams: Prom
     );
   }
   return (
-    <AuthShell title="Faculty & Administration" subtitle="Staff sign-in.">
+    <AuthShell title="Faculty & Administration" subtitle="Staff sign-in." tone="staff">
       <ActionForm action={backendLoginAction} className="space-y-4">
         <input type="hidden" name="next" value={sp.next ?? ""} />
         <TextField label="Email" name="identifier" type="email" autoComplete="username" required />

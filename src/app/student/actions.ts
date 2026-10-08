@@ -18,7 +18,7 @@ import { createEvaluation } from "@/server/services/quality";
 const g = (f: FormData, k: string) => f.get(k)?.toString().trim() ?? "";
 
 export async function registerCoursesAction(offeringIds: string[]) {
-  return action({ role: "learner" }, async (a, ctx) => {
+  return action({ role: "learner", access: "COURSES" }, async (a, ctx) => {
     const lc = await learnerContext(a.id);
     if (!lc?.primary) throw new AppError("NOT_FOUND", "No active enrolment.");
     await registerForOfferings(a, lc.primary.e.id, offeringIds, ctx);
@@ -27,15 +27,15 @@ export async function registerCoursesAction(offeringIds: string[]) {
 }
 
 export async function dropCourseAction(registrationId: string) {
-  return action({ role: "learner" }, async (a, ctx) => { await dropRegistration(a, registrationId, ctx); revalidatePath("/student", "layout"); }, "Course dropped.");
+  return action({ role: "learner", access: "COURSES" }, async (a, ctx) => { await dropRegistration(a, registrationId, ctx); revalidatePath("/student", "layout"); }, "Course dropped.");
 }
 
 export async function completeLessonAction(lessonId: string) {
-  return action({ role: "learner" }, async (a) => { await completeLesson(a, lessonId); revalidatePath("/student", "layout"); }, "Marked as complete.");
+  return action({ role: "learner", access: "COURSES" }, async (a) => { await completeLesson(a, lessonId); revalidatePath("/student", "layout"); }, "Marked as complete.");
 }
 
 export async function submitAssignmentAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => {
+  return action({ role: "learner", access: "ASSESSMENTS" }, async (a, ctx) => {
     let assetId: string | undefined;
     const file = f.get("file");
     if (file && typeof file !== "string" && (file as File).size > 0) assetId = (await storeAsset(a, await readFormFile(f), "SUBMISSION", ctx)).id;
@@ -45,50 +45,50 @@ export async function submitAssignmentAction(_: ActionResult | null, f: FormData
 }
 
 export async function startExamAction(assessmentId: string) {
-  return action({ role: "learner" }, async (a, ctx) => ({ attemptId: await startAttempt(a, assessmentId, ctx) }));
+  return action({ role: "learner", access: "ASSESSMENTS" }, async (a, ctx) => ({ attemptId: await startAttempt(a, assessmentId, ctx) }));
 }
 export async function saveExamAction(attemptId: string, answers: Record<string, unknown>, events: { t: string }[]) {
-  return action({ role: "learner" }, async (a, ctx) => { await saveAnswers(a, attemptId, answers, events, ctx); });
+  return action({ role: "learner", access: "ASSESSMENTS" }, async (a, ctx) => { await saveAnswers(a, attemptId, answers, events, ctx); });
 }
 export async function submitExamAction(attemptId: string) {
-  return action({ role: "learner" }, async (a, ctx) => { await submitAttempt(a, attemptId, ctx); revalidatePath("/student", "layout"); }, "Examination submitted.");
+  return action({ role: "learner", access: "ASSESSMENTS" }, async (a, ctx) => { await submitAttempt(a, attemptId, ctx); revalidatePath("/student", "layout"); }, "Examination submitted.");
 }
 
 export async function appealAction(resultId: string, reason: string) {
-  return action({ role: "learner" }, async (a, ctx) => { await submitAppeal(a, resultId, reason, ctx); }, "Appeal submitted to the Academic Board.");
+  return action({ role: "learner", access: false }, async (a, ctx) => { await submitAppeal(a, resultId, reason, ctx); }, "Appeal submitted to the Academic Board.");
 }
 
 export async function logActivityAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => {
+  return action({ role: "learner", access: "MINISTRY" }, async (a, ctx) => {
     await logActivity(a, { kind: g(f, "kind"), activityOn: g(f, "activityOn"), hours: Number(g(f, "hours")), description: g(f, "description"), reflection: g(f, "reflection"), placementId: g(f, "placementId") }, ctx);
     revalidatePath("/student/ministry");
   }, "Activity recorded. It counts once your mentor verifies it.");
 }
 
 export async function proposePlacementAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => {
+  return action({ role: "learner", access: "MINISTRY" }, async (a, ctx) => {
     await proposePlacement(a, { kind: g(f, "kind"), organisation: g(f, "organisation"), location: g(f, "location"), supervisorName: g(f, "supervisorName"), supervisorContact: g(f, "supervisorContact"), startsOn: g(f, "startsOn"), endsOn: g(f, "endsOn"), hoursRequired: Number(g(f, "hoursRequired") || 0) }, ctx);
     revalidatePath("/student/ministry");
   }, "Placement proposed for approval.");
 }
 
 export async function reflectPlacementAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => { await addEvaluation(a, g(f, "placementId"), { kind: "STUDENT_REFLECTION", ratings: {}, narrative: g(f, "narrative") }, ctx); revalidatePath("/student/ministry"); }, "Reflection saved.");
+  return action({ role: "learner", access: "MINISTRY" }, async (a, ctx) => { await addEvaluation(a, g(f, "placementId"), { kind: "STUDENT_REFLECTION", ratings: {}, narrative: g(f, "narrative") }, ctx); revalidatePath("/student/ministry"); }, "Reflection saved.");
 }
 
 export async function formationAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => {
+  return action({ role: "learner", access: "MINISTRY" }, async (a, ctx) => {
     await addFormationEntry(a, { kind: g(f, "kind"), reflection: g(f, "reflection"), entryOn: g(f, "entryOn"), share: f.get("share") === "on" }, ctx);
     revalidatePath("/student/formation");
   }, "Reflection saved.");
 }
 
 export async function startResearchAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => { await startResearch(a, g(f, "title"), g(f, "abstract"), ctx); revalidatePath("/student/research"); }, "Research topic registered.");
+  return action({ role: "learner", access: "RESEARCH" }, async (a, ctx) => { await startResearch(a, g(f, "title"), g(f, "abstract"), ctx); revalidatePath("/student/research"); }, "Research topic registered.");
 }
 
 export async function researchSubmitAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => {
+  return action({ role: "learner", access: "RESEARCH" }, async (a, ctx) => {
     let assetId: string | undefined;
     const file = f.get("file");
     if (file && typeof file !== "string" && (file as File).size > 0) assetId = (await storeAsset(a, await readFormFile(f), "SUBMISSION", ctx)).id;
@@ -102,11 +102,11 @@ export async function markNotificationsReadAction() {
 }
 
 export async function evaluateCourseAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a, ctx) => { await createEvaluation(a, { offeringId: g(f, "offeringId"), rating: Number(g(f, "rating")), comment: g(f, "comment") }, ctx); revalidatePath("/student", "layout"); }, "Thank you for your feedback.");
+  return action({ role: "learner", access: "COURSES" }, async (a, ctx) => { await createEvaluation(a, { offeringId: g(f, "offeringId"), rating: Number(g(f, "rating")), comment: g(f, "comment") }, ctx); revalidatePath("/student", "layout"); }, "Thank you for your feedback.");
 }
 
 export async function updateProfileAction(_: ActionResult | null, f: FormData) {
-  return action({ role: "learner" }, async (a) => {
+  return action({ role: "learner", access: false }, async (a) => {
     const lc = await learnerContext(a.id);
     if (!lc) throw new AppError("NOT_FOUND", "Profile not found.");
     await getDb().update(s.students).set({ address: g(f, "address") || null, emergencyContact: { name: g(f, "ecName"), relationship: g(f, "ecRel"), phone: g(f, "ecPhone") } }).where(eq(s.students.id, lc.student.id));

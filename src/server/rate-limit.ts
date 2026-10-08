@@ -14,6 +14,7 @@ export const LIMITS = {
   ai: { max: 20, windowSec: 60 * 60 },
   examSave: { max: 900, windowSec: 10 * 60 },
   export: { max: 40, windowSec: 60 * 60 },
+  codeActivation: { max: 8, windowSec: 15 * 60 },
 } as const;
 
 export type LimitName = keyof typeof LIMITS;

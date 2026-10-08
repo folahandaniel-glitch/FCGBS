@@ -40,13 +40,14 @@ export default async function ResourceEdit({ params, searchParams }: { params: P
           <input type="hidden" name="_id" value={id} />
           <div className="grid gap-4 md:grid-cols-2">
             {r.fields.map((f) => {
-              const wide = f.type === "textarea" || f.type === "lines" || f.type === "topics" || f.type === "image";
+              const wide = f.type === "textarea" || f.type === "lines" || f.type === "topics" || f.type === "image" || f.type === "file";
               const cls = wide ? "md:col-span-2" : "";
               if (f.type === "bool") return <div key={f.name} className={cls}><CheckboxField name={f.name} label={f.label} defaultChecked={Boolean((row as Record<string, unknown>)[f.name] ?? (isNew && f.name === "active"))} hint={f.hint} /></div>;
-              if (f.type === "textarea") return <TextAreaField key={f.name} name={f.name} label={f.label} className={cls} defaultValue={val(f)} rows={4} required={f.required} hint={f.hint} />;
+              if (f.type === "textarea") return <TextAreaField key={f.name} name={f.name} label={f.label} className={cls} defaultValue={val(f)} rows={f.rows ?? 4} required={f.required} hint={f.hint} />;
               if (f.type === "lines") return <TextAreaField key={f.name} name={f.name} label={`${f.label} (one per line)`} className={cls} defaultValue={val(f)} rows={5} hint={f.hint} />;
               if (f.type === "topics") return <TextAreaField key={f.name} name={f.name} label="Course topics (one per line: Title :: point; point; point)" className={cls} defaultValue={val(f)} rows={6} />;
               if (f.type === "image") { const cur = val(f); return <div key={f.name} className={cls}><input type="hidden" name={f.name} value={cur} /><p className="mb-1.5 text-sm font-semibold text-navy-800">{f.label}</p>{cur && <img src={`/api/v1/assets/${cur}`} alt="" className="mb-2 h-24 rounded-lg object-cover ring-1 ring-line" />}<input type="file" name={`${f.name}__file`} accept="image/png,image/jpeg,image/webp,image/gif" aria-label={f.label} className="text-sm" /></div>; }
+              if (f.type === "file") { const cur = val(f); return <div key={f.name} className={cls}><input type="hidden" name={f.name} value={cur} /><p className="mb-1.5 text-sm font-semibold text-navy-800">{f.label}</p>{cur && <p className="mb-2 text-xs"><a className="font-semibold text-royal-700 underline" href={`/api/v1/assets/${cur}`}>Current file</a> — choose a new file below to replace it.</p>}<input type="file" name={`${f.name}__file`} accept={f.accept} aria-label={f.label} className="text-sm" /></div>; }
               if (f.type === "select") {
                 const opts = f.lookup ? options[f.name] : f.options ?? [];
                 const def = val(f) || (isNew && f.name === "status" ? "DRAFT" : isNew && f.name === "audience" ? "PUBLIC" : isNew && f.name === "accessLevel" ? "STUDENTS" : "");

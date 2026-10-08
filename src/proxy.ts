@@ -31,8 +31,8 @@ export function proxy(request: NextRequest) {
 
   const { pathname, search } = request.nextUrl;
   const hasSession = Boolean(request.cookies.get(COOKIE)?.value);
-  if (!hasSession && (pathname.startsWith("/student") || pathname.startsWith("/admin") || pathname.startsWith("/teach"))) {
-    const to = pathname.startsWith("/admin") || pathname.startsWith("/teach") ? "/backend" : "/login";
+  if (!hasSession && (pathname.startsWith("/student") || pathname.startsWith("/admin") || pathname === "/teach" || pathname.startsWith("/teach/"))) {
+    const to = pathname.startsWith("/admin") || pathname === "/teach" || pathname.startsWith("/teach/") ? "/backend" : "/login";
     const url = new URL(to, request.url);
     url.searchParams.set("next", pathname + search);
     return NextResponse.redirect(url);

@@ -12,7 +12,7 @@ const COLORS = ["yellow", "green", "blue", "pink", "orange"];
 
 /** Saves, replaces or removes the signed-in user's own note / highlight / bookmark on a verse. */
 export async function saveVerseMark(input: { book: number; chapter: number; verse: number; kind: "NOTE" | "HIGHLIGHT" | "BOOKMARK"; color?: string; body?: string; remove?: boolean }) {
-  return action({ role: "any" }, async (a) => {
+  return action({ role: "any", access: "BIBLE" }, async (a) => {
     const { book, chapter, verse } = input;
     if (!Number.isInteger(book) || book < 0 || book > 65 || chapter < 1 || chapter > chapterCount(book) || verse < 1 || verse > verseCount(book, chapter)) throw new AppError("VALIDATION", "That verse does not exist.");
     if (!["NOTE", "HIGHLIGHT", "BOOKMARK"].includes(input.kind)) throw new AppError("VALIDATION", "Unknown kind.");

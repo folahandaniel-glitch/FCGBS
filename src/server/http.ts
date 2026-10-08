@@ -8,6 +8,8 @@ import { securityEvent, type Actor, type ReqCtx } from "./audit";
 import { resolveSessionToken, type ResolvedSession } from "./auth/session";
 import { AppError, toPublicError } from "./errors";
 import { getSetting } from "./settings";
+import type { Feature } from "@/core/features";
+import { requireActiveAccess, requireFeature } from "./services/access";
 
 export const SESSION_COOKIE = process.env.NODE_ENV === "production" ? "__Host-fcgbs_session" : "fcgbs_session";
 
@@ -76,7 +78,19 @@ export async function requireStaffPage(perm?: Permission | SuperCapability | (Pe
 
 export type ActionResult<T = unknown> = { ok: true; data?: T; message?: string } | { ok: false; error: string; fields?: Record<string, string[]> };
 
-export type Guard = { role: "learner" | "staff" | "applicant" | "any"; perm?: Permission | SuperCapability | (Permission | SuperCapability)[] };
+/**
+ * `access` is the learning feature the call needs (src/core/features.ts). Learners need an active access code for any
+ * learner action ("ANY"); pass false only for account basics (profile, security, notifications). Staff are exempt.
+ */
+export type Guard = { role: "learner" | "staff" | "applicant" | "any"; perm?: Permission | SuperCapability | (Permission | SuperCapability)[]; access?: Feature | "ANY" | false };
+
+async function enforceAccess(s: ResolvedSession, role: Guard["role"] | "learner", access: Guard["access"]) {
+  if (access === false) return;
+  const want = access ?? (role === "learner" ? "ANY" : undefined);
+  if (!want) return;
+  if (want === "ANY") await requireActiveAccess(s.user.id, s.user.userType);
+  else await requireFeature(s.user.id, want, s.user.userType);
+}
 
 /**
  * Wraps a server action: resolves the session, enforces role/permission on the server, converts errors to
@@ -99,6 +113,7 @@ export async function action<T>(guard: Guard, fn: (actor: Actor, ctx: ReqCtx, se
       const perms = Array.isArray(guard.perm) ? guard.perm : [guard.perm];
       if (!perms.some((p) => can(s.actor, p))) await deny(`missing ${perms.join("|")}`);
     }
+    await enforceAccess(s, guard.role, guard.access);
     const data = await fn(s.actor, ctx, s);
     return { ok: true, data, message };
   } catch (e) {
@@ -131,7 +146,7 @@ function sameOrigin(req: NextRequest) {
  * (Authorization: Bearer). Cookie-authenticated unsafe methods must be same-origin (CSRF protection).
  */
 export function api<P = Record<string, string>>(
-  opts: { auth: ApiAuth; perm?: Permission | SuperCapability | (Permission | SuperCapability)[]; allowMfaPending?: boolean },
+  opts: { auth: ApiAuth; perm?: Permission | SuperCapability | (Permission | SuperCapability)[]; allowMfaPending?: boolean; access?: Guard["access"] },
   fn: (args: { req: NextRequest; params: P; actor: Actor | null; session: ResolvedSession | null; ctx: ReqCtx }) => Promise<Response | unknown>,
 ) {
   return async (req: NextRequest, context: { params: Promise<P> }) => {
@@ -164,6 +179,7 @@ export function api<P = Record<string, string>>(
           }
         }
       }
+      if (session) await enforceAccess(session, opts.auth === "learner" ? "learner" : "any", opts.access);
       const out = await fn({ req, params: await context.params, actor: session?.actor ?? null, session, ctx });
       if (out instanceof Response) return out;
       return NextResponse.json({ ok: true, data: out ?? null }, { headers: { "Cache-Control": "no-store" } });

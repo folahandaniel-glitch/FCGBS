@@ -1325,3 +1325,62 @@ export const materials = pgTable(
   },
   (t) => [index("materials_course_idx").on(t.courseId), index("materials_teaching_idx").on(t.teachingId)],
 );
+
+/* ------------------------------------------------------------ access codes */
+
+/** One code = one account. Codes are stored as an HMAC (lookup) plus an encrypted copy so the Super Admin can re-issue them. */
+export const accessCodes = pgTable(
+  "access_codes",
+  {
+    id: id(),
+    codeHash: text("code_hash").notNull().unique(),
+    codeEnc: text("code_enc").notNull(),
+    codeSuffix: text("code_suffix").notNull(),
+    status: text("status").notNull().default("UNUSED"), // UNUSED | ACTIVE | EXPIRED | SUSPENDED | REVOKED
+    durationDays: integer("duration_days").notNull(),
+    /** Feature keys this code opens (src/core/features.ts). Null = every standard feature. */
+    features: jsonb("features").$type<string[]>(),
+    batchId: uuid("batch_id"),
+    note: text("note"),
+    createdBy: uuid("created_by").notNull(),
+    createdAt: createdAt(),
+    activatedBy: uuid("activated_by").references(() => users.id),
+    activatedAt: ts("activated_at"),
+    statusChangedAt: ts("status_changed_at"),
+    statusReason: text("status_reason"),
+  },
+  (t) => [index("access_codes_status_idx").on(t.status, t.createdAt), index("access_codes_user_idx").on(t.activatedBy), index("access_codes_batch_idx").on(t.batchId)],
+);
+
+export const accessPeriods = pgTable(
+  "access_periods",
+  {
+    id: id(),
+    userId: uuid("user_id").notNull().references(() => users.id),
+    codeId: uuid("code_id").notNull().unique().references(() => accessCodes.id),
+    status: text("status").notNull().default("ACTIVE"), // ACTIVE | EXPIRED | SUSPENDED | REVOKED | ENDED
+    activatedAt: ts("activated_at").notNull(),
+    originalExpiresAt: ts("original_expires_at").notNull(),
+    currentExpiresAt: ts("current_expires_at").notNull(),
+    durationDays: integer("duration_days").notNull(),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("access_periods_user_idx").on(t.userId, t.status, t.currentExpiresAt)],
+);
+
+export const accessExtensions = pgTable(
+  "access_extensions",
+  {
+    id: id(),
+    periodId: uuid("period_id").notNull().references(() => accessPeriods.id, { onDelete: "cascade" }),
+    action: text("action").notNull(), // EXTEND | REDUCE | SET_EXPIRY | SET_DURATION | END | SUSPEND | RESTORE | REVOKE | REACTIVATE
+    previousExpiresAt: ts("previous_expires_at").notNull(),
+    newExpiresAt: ts("new_expires_at").notNull(),
+    deltaDays: integer("delta_days"),
+    reason: text("reason").notNull(),
+    adminId: uuid("admin_id").notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("access_ext_period_idx").on(t.periodId)],
+);

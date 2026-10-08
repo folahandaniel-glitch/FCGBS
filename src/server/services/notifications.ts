@@ -2,7 +2,7 @@ import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { getDb, type Executor } from "../db";
 import { emailOutbox, notifications, users } from "../db/schema";
 
-export type NotifyCategory = "ADMISSION" | "REGISTRATION" | "ASSIGNMENT" | "EXAMINATION" | "RESULT" | "ACADEMIC_WARNING" | "GRADUATION" | "CERTIFICATE" | "ANNOUNCEMENT" | "PRACTICUM" | "RESEARCH" | "SECURITY";
+export type NotifyCategory = "ADMISSION" | "REGISTRATION" | "ASSIGNMENT" | "EXAMINATION" | "RESULT" | "ACADEMIC_WARNING" | "GRADUATION" | "CERTIFICATE" | "ANNOUNCEMENT" | "PRACTICUM" | "RESEARCH" | "SECURITY" | "ACCESS";
 
 export async function notifyUser(n: { userId: string; category: NotifyCategory; title: string; body?: string; link?: string; email?: boolean }, db: Executor = getDb()) {
   await db.insert(notifications).values({ userId: n.userId, category: n.category, title: n.title, body: n.body, link: n.link });

@@ -24,6 +24,15 @@ export async function saveResourceAction(_: ActionResult | null, form: FormData)
         form.set(f.name, (await storeAsset(a, await readFormFile(fd), "SITE", ctx)).id);
       }
     }
+    // File fields (study materials, teaching audio): a newly chosen file is stored privately for signed-in learners.
+    for (const f of r.fields.filter((x) => x.type === "file")) {
+      const file = form.get(`${f.name}__file`);
+      if (file && typeof file !== "string" && (file as File).size > 0) {
+        const fd = new FormData();
+        fd.set("file", file as File);
+        form.set(f.name, (await storeAsset(a, await readFormFile(fd), "LIBRARY", ctx)).id);
+      }
+    }
     const savedId = await saveResource(a, r, id && id !== "new" ? id : null, form, ctx);
     target = `/admin/r/${key}/${savedId}`;
     revalidatePath("/", "layout");
