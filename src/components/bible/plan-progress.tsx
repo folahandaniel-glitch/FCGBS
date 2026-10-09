@@ -11,6 +11,7 @@ export function PlanProgress({ slug, days }: { slug: string; days: Day[] }) {
   const [done, setDone] = useState<Set<number>>(new Set());
   const [ready, setReady] = useState(false);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading browser-only storage after mount
     try { setDone(new Set(JSON.parse(localStorage.getItem(key) ?? "[]") as number[])); } catch {}
     setReady(true);
   }, [key]);

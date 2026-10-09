@@ -64,3 +64,7 @@ Generate secrets: `node -e "console.log(require('crypto').randomBytes(48).toStri
 - **No fake data.** There are no invented testimonials, statistics, faculty qualifications, partners or campuses. Leadership slots other than the Founder are labelled placeholders to be completed.
 - **E-mail** is queued and shown as *held* unless `RESEND_API_KEY` is set — never falsely "sent". **Online payments** are prepared but off; Finance records payments manually. **Exam integrity** features are session timing, randomisation, attempt limits and *activity logging for human review* — the system does not claim proctoring.
 - Library listings are **citation-only** unless the Librarian confirms the school holds distribution rights.
+
+
+## 2026 upgrade
+See [docs/UPGRADE_2026.md](docs/UPGRADE_2026.md): Bible Hub with concordance and Hebrew/Greek, the Teaching Library, DOCX/PPTX/PDF exports, and the access-code system.

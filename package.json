@@ -16,7 +16,9 @@
     "db:demo": "tsx --env-file-if-exists=.env.local scripts/seed-demo.ts",
     "brand:assets": "node scripts/brand-assets.mjs assets-source/image1.png",
     "vercel-build": "npm run db:migrate && npm run db:seed && next build",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build"
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "verify:content": "tsx scripts/check-quotes.ts && vitest run tests/unit/content.test.ts",
+    "bible:data": "node scripts/build-bible-data.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",

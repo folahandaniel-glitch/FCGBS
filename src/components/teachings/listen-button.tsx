@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export function ListenButton({ targetId, title }: { targetId: string; title: string }) {
   const [on, setOn] = useState(false);
   const [ok, setOk] = useState(true);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- feature detection after mount
   useEffect(() => { setOk(typeof window !== "undefined" && "speechSynthesis" in window); return () => { try { window.speechSynthesis?.cancel(); } catch {} }; }, []);
   if (!ok) return null;
   const toggle = () => {

@@ -1,3 +1,4 @@
+import { NEW_PROGRAMMES } from "@/content/programmes-more";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { count } from "drizzle-orm";
 import { freshDb } from "../support/db";
@@ -21,6 +22,6 @@ it("seeds idempotently", async () => {
   await seedStructure(ctx.db);
   const [p] = await ctx.db.select({ n: count() }).from(s.programmes);
   const [c] = await ctx.db.select({ n: count() }).from(s.courses);
-  expect(p.n).toBe(PROGRAMMES.length);
+  expect(p.n).toBe(PROGRAMMES.length + NEW_PROGRAMMES.length);
   expect(c.n).toBe(ALL_COURSES.length);
 }, 120000);

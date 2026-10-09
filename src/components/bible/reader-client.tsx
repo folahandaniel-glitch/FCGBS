@@ -22,6 +22,7 @@ export function ReaderClient({ children, book, chapter, label, signedIn, hasStro
   const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading browser-only storage after mount
     try { const v = Number(localStorage.getItem("fcgbs-bible-size")); if (v >= 0.9 && v <= 1.8) setSize(v); if (localStorage.getItem("fcgbs-bible-tags") === "0") setTags(false); } catch {}
     return () => { try { window.speechSynthesis?.cancel(); } catch {} };
   }, []);

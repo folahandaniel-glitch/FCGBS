@@ -5,6 +5,10 @@ import { COLOUR } from "@/components/bible/colours";
 
 export const TRACK_ICONS: Record<string, LucideIcon> = { compass: Compass, shepherd: HeartHandshake, megaphone: Megaphone, flame: Flame, spark: Sparkles, landmark: Landmark, book: BookOpen, cpu: Cpu };
 export const iconFor = (k?: string | null) => TRACK_ICONS[k ?? ""] ?? BookOpen;
+export function TrackIcon({ name, className }: { name?: string | null; className?: string }) {
+  const I = TRACK_ICONS[name ?? ""] ?? BookOpen;
+  return <I className={className} aria-hidden />;
+}
 export const LEVELS: Record<string, { label: string; cls: string }> = {
   FOUNDATION: { label: "Foundation", cls: "bg-emerald-100 text-emerald-800" },
   INTERMEDIATE: { label: "Intermediate", cls: "bg-amber-100 text-amber-800" },
@@ -13,11 +17,10 @@ export const LEVELS: Record<string, { label: string; cls: string }> = {
 
 export function TeachingBanner({ eyebrow, title, colour = "royal", children, icon }: { eyebrow?: string; title: ReactNode; colour?: string; children?: ReactNode; icon?: string | null }) {
   const c = COLOUR[colour] ?? COLOUR.royal;
-  const Icon = iconFor(icon);
   return (
     <section className={`relative overflow-hidden bg-gradient-to-br ${c.grad} text-white`}>
       <div className="pointer-events-none absolute -right-16 -top-20 size-72 rounded-full bg-white/10 blur-2xl" aria-hidden />
-      <Icon className="pointer-events-none absolute -bottom-8 right-6 size-48 text-white/10" aria-hidden />
+      <TrackIcon name={icon} className="pointer-events-none absolute -bottom-8 right-6 size-48 text-white/10" />
       <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         {eyebrow && <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold-200">{eyebrow}</p>}
         <h1 className="mt-1 max-w-3xl font-display text-3xl font-bold sm:text-5xl">{title}</h1>

@@ -91,7 +91,7 @@ export default async function TeachingPage({ params }: Props) {
             <ul className="mt-2 space-y-1.5 text-sm">{siblings.filter((x) => x.id !== t.id).slice(0, 6).map((x) => <li key={x.id}><Link href={`/teachings/${x.trackSlug}/${x.slug}`} className="text-royal-700 hover:underline">{x.title}</Link></li>)}</ul>
             <Link href={`/teachings/${t.trackSlug}`} className="mt-3 inline-block text-xs font-bold text-royal-700 underline">See all</Link>
           </div>
-          <Link href="/bible" className="block rounded-3xl bg-gradient-to-br from-gold-500 to-amber-700 p-5 text-white shadow-card hover:shadow-lift"><p className="font-extrabold">Open the Bible study tools</p><p className="mt-1 text-sm text-white/90">Strong's Hebrew and Greek, concordance, topics and reading plans.</p></Link>
+          <Link href="/bible" className="block rounded-3xl bg-gradient-to-br from-gold-500 to-amber-700 p-5 text-white shadow-card hover:shadow-lift"><p className="font-extrabold">Open the Bible study tools</p><p className="mt-1 text-sm text-white/90">Strong&apos;s Hebrew and Greek, concordance, topics and reading plans.</p></Link>
         </aside>
       </div>
     </>

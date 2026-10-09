@@ -20,8 +20,8 @@ export default async function NotesPage() {
   const group = (kind: string) => rows.filter((r) => r.kind === kind);
   const link = (r: (typeof rows)[number]) => `/bible/${BOOKS[r.book].slug}/${r.chapter}?v=${r.verse}#v${r.verse}`;
   const ref = (r: (typeof rows)[number]) => `${BOOKS[r.book].name} ${r.chapter}:${r.verse}`;
-  const Section = ({ title, kind }: { title: string; kind: string }) => (
-    <section>
+  const section = (title: string, kind: string) => (
+    <section key={kind}>
       <h2 className="mb-3 font-display text-xl font-bold text-navy-800">{title} ({group(kind).length})</h2>
       {group(kind).length === 0 ? <p className="text-sm text-muted">Nothing here yet. Open a chapter and tap a verse number.</p> : (
         <ul className="space-y-3">{group(kind).map((r) => (
@@ -39,9 +39,9 @@ export default async function NotesPage() {
       <BibleBanner eyebrow="Private to you" title="My notes, highlights & bookmarks" tone="amber" />
       <BibleTabs active="/bible/notes" />
       <div className="mx-auto max-w-3xl space-y-10 px-4 py-8 sm:px-6">
-        <Section title="Notes" kind="NOTE" />
-        <Section title="Bookmarks" kind="BOOKMARK" />
-        <Section title="Highlights" kind="HIGHLIGHT" />
+        {section("Notes", "NOTE")}
+        {section("Bookmarks", "BOOKMARK")}
+        {section("Highlights", "HIGHLIGHT")}
       </div>
     </>
   );
