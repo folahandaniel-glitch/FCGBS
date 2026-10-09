@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Cpu, Landmark } from "lucide-react";
 import { Carousel, type CarouselSlide } from "@/components/site/carousel";
 import { Checklist, InfoCard, Section } from "@/components/site/blocks";
+import { HomeLearn } from "@/components/site/home-learn";
 import { ButtonLink } from "@/components/ui/primitives";
 import { Logo } from "@/components/brand";
 import { getBrand } from "@/server/brand";
@@ -49,6 +50,8 @@ export default async function HomePage() {
           <Carousel slides={slides} seconds={brand.site.carouselSeconds} />
         </div>
       </section>
+
+      <HomeLearn />
 
       <Section title={home.pathwayTitle} subtitle={home.pathwaySubtitle} tone="white">
         <div className="grid gap-5 lg:grid-cols-3">

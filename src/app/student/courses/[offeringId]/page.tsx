@@ -5,11 +5,14 @@ import { ActionForm, SubmitButton, TextAreaField } from "@/components/ui/form";
 import { requireLearnerPage } from "@/server/http";
 import { attendancePct, courseForLearner } from "@/server/services/learner";
 import { evaluateCourseAction } from "../../actions";
+import { MaterialList } from "@/components/teachings/materials";
+import { materialsFor } from "@/server/services/teachings";
 
 export default async function CourseDetail({ params }: { params: Promise<{ offeringId: string }> }) {
   const sess = await requireLearnerPage();
   const c = await courseForLearner(sess.user.id, (await params).offeringId);
   const att = await attendancePct(c.reg.id, c.offering.id);
+  const mats = (await materialsFor({ courseId: c.course.id }, true)).filter((m) => !m.teachingId);
   const doneCount = c.lessons.filter((l) => c.done.has(l.id)).length;
   return (
     <>
@@ -28,6 +31,7 @@ export default async function CourseDetail({ params }: { params: Promise<{ offer
           ))}
         </Card>
         <div className="space-y-6">
+          {mats.length > 0 && <MaterialList items={mats} title="Study materials" />}
           <Card>
             <CardHeader title="Assignments & examinations" />
             {c.assessments.length === 0 ? <p className="p-5 text-sm text-muted">No assignments have been published.</p> : <ul className="divide-y divide-line">{c.assessments.map((a) => { const sub = c.subs.find((x) => x.assessmentId === a.id); return <li key={a.id} className="px-5 py-3 text-sm"><Link href={`/student/assessments/${a.id}`} className="font-semibold text-navy-800 hover:underline">{a.title}</Link><div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted"><Badge tone="blue">{a.kind.toLowerCase()}</Badge>{a.dueAt && <span>Due {a.dueAt.toLocaleDateString("en-GB")}</span>}{sub && <Badge tone={sub.status === "GRADED" ? "green" : "amber"}>{sub.status === "GRADED" ? `Score ${sub.score}` : "Submitted"}</Badge>}</div></li>; })}</ul>}

@@ -4,8 +4,9 @@
  */
 import { COURSES_A } from "./courses-a";
 import { COURSES_B } from "./courses-b";
+import { COURSES_C } from "./courses-c";
 
-export const ALL_COURSES = [...COURSES_A, ...COURSES_B];
+export const ALL_COURSES = [...COURSES_A, ...COURSES_B, ...COURSES_C];
 
 export const DEPARTMENTS: { code: string; name: string; description: string }[] = [
   { code: "CFN", name: "Christian Foundations", description: "Entry-level formation in the faith, prayer, character, discipleship and ministry." },

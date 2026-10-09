@@ -170,7 +170,7 @@ export function PageHeader({ title, description, actions, eyebrow, breadcrumbs }
 export function Stat({ label, value, hint, icon, tone = "royal" }: { label: string; value: ReactNode; hint?: ReactNode; icon?: ReactNode; tone?: "royal" | "gold" | "green" | "red" | "navy" }) {
   const tones = { royal: "bg-royal-50 text-royal-600", gold: "bg-gold-100 text-gold-600", green: "bg-success-50 text-success-600", red: "bg-danger-50 text-danger-600", navy: "bg-navy-800 text-white" };
   return (
-    <Card className="p-4 sm:p-5">
+    <Card className={cx("border-t-4 p-4 sm:p-5", { royal: "border-t-royal-500", gold: "border-t-gold-500", green: "border-t-emerald-500", red: "border-t-rose-500", navy: "border-t-navy-700" }[tone])}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>

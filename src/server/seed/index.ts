@@ -1,7 +1,11 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { ALL_PERMISSIONS, SYSTEM_ROLES } from "@/core/permissions";
 import { ADMISSION_BY_LEVEL, ALL_COURSES, ASSESSMENT_NOTE, DEPARTMENTS, GRADUATION_BY_LEVEL, LEVELS, PROGRAMMES, RECOGNITION_NOTE } from "@/content/programmes";
 import { LESSONS, QUESTIONS } from "@/content/lessons";
+import { MORE_LESSONS } from "@/content/lessons-more";
+import { COURSE_TEACHINGS } from "@/content/course-teachings";
+import { ELECTIVE_ADDITIONS, NEW_PROGRAMMES } from "@/content/programmes-more";
+import { MATERIALS } from "@/content/materials";
 import { FAQS, POLICIES } from "@/content/policies";
 import { TEACHINGS, TRACKS } from "@/content/teachings";
 import type { DB } from "../db";
@@ -49,6 +53,7 @@ export async function seedStructure(db: DB) {
   const depts = new Map((await db.select().from(s.departments)).map((d) => [d.code, d.id]));
 
   // ---- courses
+  const existingCourseCodes = new Set((await db.select({ code: s.courses.code }).from(s.courses)).map((c) => c.code));
   const approved = { status: "PUBLISHED" as const };
   for (const c of ALL_COURSES) {
     await db
@@ -106,7 +111,7 @@ export async function seedStructure(db: DB) {
   }
 
   // ---- programmes
-  for (const [i, p] of PROGRAMMES.entries()) {
+  for (const [i, p] of [...PROGRAMMES, ...NEW_PROGRAMMES].entries()) {
     const levelRank = LEVELS.find((l) => l.key === p.level)!.rank;
     const credits = p.core.reduce((a, code) => a + (ALL_COURSES.find((c) => c.code === code)?.credits ?? 0), 0);
     const [row] = await db
@@ -129,6 +134,59 @@ export async function seedStructure(db: DB) {
       ...p.electives.map((code, idx) => ({ programmeId: row.id, courseId: courseId.get(code)!, kind: "ELECTIVE", year: 1, semester: 1, sort: 100 + idx })),
     ].filter((l) => l.courseId);
     if (links.length) await db.insert(s.programmeCourses).values(links).onConflictDoNothing();
+  }
+
+  // ---- new courses become electives of existing programmes (only when the course is first created)
+  const freshCourses = new Set(ALL_COURSES.filter((c) => !existingCourseCodes.has(c.code)).map((c) => c.code));
+  if (freshCourses.size) {
+    const progId = new Map((await db.select({ id: s.programmes.id, code: s.programmes.code }).from(s.programmes)).map((p) => [p.code, p.id]));
+    for (const [pcode, codes] of Object.entries(ELECTIVE_ADDITIONS)) {
+      const pid = progId.get(pcode);
+      if (!pid) continue;
+      const rows = codes.filter((c) => freshCourses.has(c) && courseId.get(c)).map((c, idx) => ({ programmeId: pid, courseId: courseId.get(c)!, kind: "ELECTIVE", year: 1, semester: 1, sort: 200 + idx }));
+      if (rows.length) await db.insert(s.programmeCourses).values(rows).onConflictDoNothing();
+    }
+  }
+
+  // ---- teaching-library lessons and extra flagship lessons: added once by title, never overwriting lecturer edits
+  const addLessons = async (code: string, moduleTitle: string, lessons: { title: string; summary: string | null; body: string; minutes: number }[]) => {
+    const cid = courseId.get(code);
+    if (!cid || !lessons.length) return;
+    const have = new Set((await db.select({ t: s.lessons.title }).from(s.lessons).where(eq(s.lessons.courseId, cid))).map((l) => l.t));
+    const todo = lessons.filter((l) => !have.has(l.title));
+    if (!todo.length) return;
+    let [mod] = await db.select({ id: s.modules.id }).from(s.modules).where(and(eq(s.modules.courseId, cid), eq(s.modules.title, moduleTitle))).limit(1);
+    if (!mod) {
+      const mods = await db.select({ p: s.modules.position }).from(s.modules).where(eq(s.modules.courseId, cid));
+      [mod] = await db.insert(s.modules).values({ courseId: cid, title: moduleTitle, summary: "Lessons from the FCGBS teaching library and faculty.", position: Math.max(0, ...mods.map((m) => m.p)) + 1 }).returning({ id: s.modules.id });
+    }
+    const start = (await db.select({ p: s.lessons.position }).from(s.lessons).where(eq(s.lessons.moduleId, mod.id))).reduce((a, l) => Math.max(a, l.p + 1), 0);
+    await db.insert(s.lessons).values(todo.map((l, i) => ({ moduleId: mod.id, courseId: cid, title: l.title, summary: l.summary, body: l.body, readMinutes: l.minutes, position: start + i, authority: "ACADEMIC" })));
+  };
+  const teaching = new Map(TEACHINGS.map((t) => [t.slug, t]));
+  for (const [code, slugs] of Object.entries(COURSE_TEACHINGS)) {
+    await addLessons(code, "Teaching lessons", slugs.map((sl) => teaching.get(sl)).filter((t): t is NonNullable<typeof t> => Boolean(t)).map((t) => ({ title: t.title, summary: t.summary, body: t.body, minutes: t.minutes })));
+  }
+  for (const code of new Set(MORE_LESSONS.map((l) => l.course))) {
+    await addLessons(code, "Lessons", MORE_LESSONS.filter((l) => l.course === code).map((l) => ({ title: l.title, summary: l.summary, body: l.body, minutes: l.minutes })));
+  }
+
+  // ---- starter study materials (links), added once per owner and title
+  {
+    const teachingId = new Map((await db.select({ id: s.teachings.id, slug: s.teachings.slug }).from(s.teachings)).map((t) => [t.slug, t.id]));
+    const have = new Set((await db.select({ c: s.materials.courseId, t: s.materials.teachingId, title: s.materials.title }).from(s.materials)).map((m) => `${m.c ?? ""}|${m.t ?? ""}|${m.title}`));
+    const rows: (typeof s.materials.$inferInsert)[] = [];
+    for (const m of MATERIALS) {
+      for (const code of m.course ?? []) {
+        const cid = courseId.get(code);
+        if (cid && !have.has(`${cid}||${m.title}`)) rows.push({ title: m.title, kind: m.kind, description: m.description, courseId: cid, url: m.url, audience: m.audience ?? "STUDENTS", status: "PUBLISHED" });
+      }
+      for (const slug of m.teaching ?? []) {
+        const tid = teachingId.get(slug);
+        if (tid && !have.has(`|${tid}|${m.title}`)) rows.push({ title: m.title, kind: m.kind, description: m.description, teachingId: tid, url: m.url, audience: m.audience ?? "PUBLIC", status: "PUBLISHED" });
+      }
+    }
+    for (let i = 0; i < rows.length; i += 100) await db.insert(s.materials).values(rows.slice(i, i + 100));
   }
 
   // ---- first academic session (current year) and two semesters

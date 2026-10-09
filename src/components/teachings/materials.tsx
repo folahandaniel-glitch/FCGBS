@@ -31,7 +31,7 @@ export function MaterialList({ items, title = "Study materials" }: { items: Mate
                 <div className="min-w-0 flex-1">
                   <p className="font-bold text-navy-800">{m.title} <span className="ml-1 text-xs font-semibold text-muted">{k.label}</span></p>
                   {m.description && <p className="mt-0.5 text-sm text-ink/75">{m.description}</p>}
-                  {href && !audio && !frame && <a href={href} {...(m.assetId ? { download: true } : { target: "_blank", rel: "noopener noreferrer" })} className="mt-1.5 inline-block text-sm font-bold text-royal-700 underline">{m.assetId ? "Download" : "Open link"}</a>}
+                  {href && !audio && !frame && <a href={href} {...(m.assetId ? { download: true } : href?.startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" })} className="mt-1.5 inline-block text-sm font-bold text-royal-700 underline">{m.assetId ? "Download" : "Open link"}</a>}
                 </div>
               </div>
               {audio && href && <audio controls preload="none" src={href} className="mt-3 w-full" />}
