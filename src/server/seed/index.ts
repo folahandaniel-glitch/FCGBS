@@ -3,6 +3,7 @@ import { ALL_PERMISSIONS, SYSTEM_ROLES } from "@/core/permissions";
 import { ADMISSION_BY_LEVEL, ALL_COURSES, ASSESSMENT_NOTE, DEPARTMENTS, GRADUATION_BY_LEVEL, LEVELS, PROGRAMMES, RECOGNITION_NOTE } from "@/content/programmes";
 import { LESSONS, QUESTIONS } from "@/content/lessons";
 import { FAQS, POLICIES } from "@/content/policies";
+import { TEACHINGS, TRACKS } from "@/content/teachings";
 import type { DB } from "../db";
 import * as s from "../db/schema";
 
@@ -149,6 +150,15 @@ export async function seedStructure(db: DB) {
   const [anyFaq] = await db.select({ id: s.posts.id }).from(s.posts).where(eq(s.posts.kind, "FAQ")).limit(1);
   if (!anyFaq) {
     await db.insert(s.posts).values(FAQS.map((f, i) => ({ kind: "FAQ", title: f.q, slug: `faq-${i + 1}`, body: f.a, status: "PUBLISHED" as const, sort: i, publishedAt: new Date() })));
+  }
+
+  // ---- teaching library: tracks and teachings are added by slug; anything an administrator already edited is left alone
+  for (const t of TRACKS) await db.insert(s.teachingTracks).values({ slug: t.slug, title: t.title, tagline: t.tagline, description: t.description, colour: t.colour, icon: t.icon, sort: t.sort, status: "PUBLISHED" }).onConflictDoNothing();
+  const trackId = new Map((await db.select({ id: s.teachingTracks.id, slug: s.teachingTracks.slug }).from(s.teachingTracks)).map((t) => [t.slug, t.id]));
+  const haveTeaching = new Set((await db.select({ slug: s.teachings.slug }).from(s.teachings)).map((t) => t.slug));
+  const freshTeachings = TEACHINGS.filter((t) => !haveTeaching.has(t.slug) && trackId.has(t.track));
+  for (let i = 0; i < freshTeachings.length; i += 25) {
+    await db.insert(s.teachings).values(freshTeachings.slice(i, i + 25).map((t, j) => ({ trackId: trackId.get(t.track)!, slug: t.slug, title: t.title, summary: t.summary, body: t.body, scriptures: t.scriptures.join("\n"), level: t.level, minutes: t.minutes, author: "FCGBS Faculty", featured: Boolean(t.featured), audience: "PUBLIC", sort: i + j, status: "PUBLISHED" as const })).slice(0)).onConflictDoNothing();
   }
 
   // ---- library: every recommended reading is listed as a citation-only record (no file, no copyright claim)

@@ -31,12 +31,16 @@ Object.assign(ALIASES, { gn: 0, ex: 1, lv: 2, nm: 3, dt: 4, jsh: 5, jg: 6, "1sam
 export interface Ref { book: number; chapter: number; v1?: number; v2?: number }
 
 /** Parses "John 3:16", "Ps 23", "1 Cor 13:4-7", "Rom 8". Returns null if it is not a valid reference. */
+const ONE_CHAPTER = new Set([30, 56, 62, 63, 64]); // Obadiah, Philemon, 2 John, 3 John, Jude
+
 export function parseRef(input: string): Ref | null {
   const m = input.trim().match(/^((?:[1-3]\s*)?[A-Za-z][A-Za-z.\s]*?)\s*(\d+)(?::(\d+)(?:\s*[-–]\s*(\d+))?)?$/);
   if (!m) return null;
   const key = m[1].toLowerCase().replace(/[.\s]/g, "");
   const book = ALIASES[key];
   if (book === undefined) return null;
+  // "Jude 3" means verse 3 of the only chapter
+  if (ONE_CHAPTER.has(book) && !m[3] && Number(m[2]) > 1) return { book, chapter: 1, v1: Number(m[2]) };
   return { book, chapter: Number(m[2]), v1: m[3] ? Number(m[3]) : undefined, v2: m[4] ? Number(m[4]) : undefined };
 }
 

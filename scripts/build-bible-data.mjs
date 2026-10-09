@@ -50,7 +50,31 @@ const kjv = CODES.map((code) => {
 // Some source files carry stray extra data; the canonical verse structure comes from the BSB text.
 const shape = fromScroll("BSB.json");
 shape.forEach((bk, i) => { kjv[i].length = bk.length; bk.forEach((c, j) => { kjv[i][j] = (kjv[i][j] ?? []).slice(0, c.length); while (kjv[i][j].length < c.length) kjv[i][j].push(""); }); });
-save("kjv", kjv);
+
+// The scraped tagged source sometimes drops a verse's last word, so the complete KJV text (scrollmapper, 1769) is the
+// authority for wording and the Strong's numbers are laid over it word by word.
+const plainKjv = fromScroll("KJVplain.json");
+const key = (t) => t.replace(/<\/?em>|\{[HG]\d+\}/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+let tagsIn = 0, tagsOut = 0, fixed = 0;
+const merged = plainKjv.map((bk, b) => bk.map((ch, c) => ch.map((plain, v) => {
+  const tagged = (kjv[b]?.[c]?.[v] ?? "").replace(/\[\[|\]\]/g, "").split(/\s+/).filter(Boolean);
+  tagsIn += (kjv[b]?.[c]?.[v] ?? "").split("{").length - 1;
+  if (!plain) return kjv[b]?.[c]?.[v] ?? "";
+  const out = [];
+  let i = 0;
+  for (const p of plain.split(/\s+/).filter(Boolean)) {
+    const kp = key(p);
+    let hit = -1;
+    for (let j = i; j < Math.min(tagged.length, i + 4) && kp; j++) if (key(tagged[j]) === kp) { hit = j; break; }
+    if (hit >= 0) { out.push(tagged[hit]); i = hit + 1; } else out.push(p);
+  }
+  if (out.length > tagged.length) fixed++;
+  const s = out.join(" ");
+  tagsOut += s.split("{").length - 1;
+  return s;
+})));
+console.log(`Strong's tags kept: ${tagsOut} of ${tagsIn}; verses completed: ${fixed}`);
+save("kjv", merged);
 
 // ---- Strong's dictionaries
 const heb = require(`../${SRC}/sh.js`);
