@@ -15,7 +15,12 @@ import { getAccessState } from "@/server/services/access";
 export default async function StudentHome({ searchParams }: { searchParams: Promise<{ welcome?: string }> }) {
   const sess = await requireLearnerPage();
   const lc = await learnerContext(sess.user.id);
-  if (!lc?.primary) return <EmptyState title="No student record yet" description="Complete your admission to access the student portal." />;
+  if (!lc?.primary) return (
+    <div className="space-y-6">
+      <div className="mb-2"><AccessCard initial={await getAccessState(sess.user.id, sess.user.userType)} contact={(await accessContact()).contact} note={(await accessContact()).note} /></div>
+      <EmptyState title="Start here: choose your free certificate programme" description="Your access code is active. Pick one certificate programme to study free of charge, and look through everything else the school offers." action={<Link className="rounded-xl bg-navy-800 px-5 py-2.5 text-sm font-bold text-white" href="/student/courses/start">Choose my free programme</Link>} />
+    </div>
+  );
   const en = lc.primary;
   const [sum, regs, anns, notes] = await Promise.all([enrolmentSummary(en.e.id), myRegistrations(en.e.id), listPosts("ANNOUNCEMENT", { limit: 4, audience: ["PUBLIC", "STUDENTS"] }), listNotifications(sess.user.id, 4)]);
   const offeringIds = regs.map((r) => r.offeringId).filter(Boolean) as string[];

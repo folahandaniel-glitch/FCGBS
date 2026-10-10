@@ -10,7 +10,7 @@ import { dropCourseAction } from "../actions";
 export default async function CoursesPage() {
   const sess = await requireLearnerPage();
   const lc = await learnerContext(sess.user.id);
-  if (!lc?.primary) return <EmptyState title="No active enrolment." />;
+  if (!lc?.primary) return <EmptyState title="Start here: choose your free certificate programme" description="Your access code is active. Pick one certificate programme to study free of charge, and look through everything else the school offers." action={<Link className="rounded-xl bg-navy-800 px-5 py-2.5 text-sm font-bold text-white" href="/student/courses/start">Choose my free programme</Link>} />;
   const regs = await myRegistrations(lc.primary.e.id);
   const cfg = await getSetting("academic");
   const offers = lc.term && lc.primary.e.status === "ACTIVE" ? await availableOfferings(lc.primary.e.id, lc.primary.e.programmeId, lc.term.id) : [];

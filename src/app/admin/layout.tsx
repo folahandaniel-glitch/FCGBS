@@ -15,6 +15,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
     { href: "/admin/admissions", label: "Applications", icon: <ClipboardList />, perm: ["admissions.view"] },
     { href: "/admin/students", label: "Students", icon: <GraduationCap />, perm: ["students.view"] },
     { href: "/admin/access-codes", label: "Access codes", icon: <KeyRound />, perm: ["codes.view"] },
+    { href: "/admin/requests", label: "Enrolment requests", icon: <ClipboardList />, perm: ["registration.manage"] },
   ] },
   { title: "Academics", items: [
     { href: "/admin/r/programmes", label: "Programmes", icon: <BookOpen />, perm: ["programmes.manage", "curriculum.approve"] },

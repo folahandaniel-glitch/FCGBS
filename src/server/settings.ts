@@ -104,6 +104,7 @@ export const SETTING_SCHEMAS = {
     currencies: z.array(str(6)).max(10),
   }),
   accessCodes: z.object({ defaultDays: z.number().int().min(1).max(3650), maxBulk: z.number().int().min(1).max(2000), allowMultipleActive: z.boolean(), contact: str(120), contactNote: str(300) }),
+  selfService: z.object({ enabled: z.boolean(), freeCertificates: z.number().int().min(0).max(5), approvalContact: str(60), autoOpenCourses: z.boolean() }),
   featureFlags: z.object({
     onlineExams: z.boolean(),
     aiAssistant: z.boolean(),
@@ -202,6 +203,7 @@ export const SETTING_DEFAULTS: { [K in SettingKey]: SettingValue<K> } = {
   },
   localisation: { defaultLanguage: "en", timezone: "Africa/Lagos", currencies: ["NGN", "USD", "GBP", "EUR", "GHS", "KES", "ZAR"] },
   accessCodes: { defaultDays: 30, maxBulk: 500, allowMultipleActive: false, contact: "", contactNote: "Access codes are issued by the school office. Contact us to get yours." },
+  selfService: { enabled: true, freeCertificates: 1, approvalContact: "08067578112", autoOpenCourses: true },
   featureFlags: { onlineExams: true, aiAssistant: false, digitalCertificates: true, alumni: true, pwa: true, research: true, library: true, community: true, techHub: true, kingdomHub: true, onlinePayments: false },
 };
 

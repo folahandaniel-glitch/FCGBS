@@ -14,6 +14,7 @@ const TABS: { key: SettingKey; label: string; perm: "settings.academic" | "setti
   { key: "finance", label: "Finance", perm: "super.settings" },
   { key: "authentication", label: "Security & sessions", perm: "super.settings", reason: true },
   { key: "accessCodes", label: "Access codes", perm: "super.settings", reason: true },
+  { key: "selfService", label: "Self-service enrolment", perm: "super.settings", reason: true },
   { key: "uploads", label: "Uploads", perm: "super.settings" },
   { key: "localisation", label: "Localisation", perm: "super.settings" },
   { key: "featureFlags", label: "Feature flags", perm: "super.settings", reason: true },

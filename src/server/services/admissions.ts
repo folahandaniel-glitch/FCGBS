@@ -160,9 +160,10 @@ export async function registerAdmittedStudent(actor: Actor, applicationId: strin
     const year = new Date().getFullYear();
     const studentNumber = `${cfg.studentIdPrefix}/${year}/${String(n).padStart(cfg.studentIdDigits, "0")}`;
     const [campus] = await tx.select({ id: s.campuses.id }).from(s.campuses).where(eq(s.campuses.isOnline, true)).limit(1);
-    const [st] = await tx.insert(s.students).values({ userId: a.userId, studentNumber, dateOfBirth: p.dateOfBirth || null, gender: p.gender, address: p.address, nationality: p.nationality, campusId: a.campusId ?? campus?.id, admissionSessionId: a.sessionId }).onConflictDoNothing().returning({ id: s.students.id });
+    const [existing] = await tx.select({ id: s.students.id, studentNumber: s.students.studentNumber }).from(s.students).where(eq(s.students.userId, a.userId));
+    const [st] = existing ? [existing] : await tx.insert(s.students).values({ userId: a.userId, studentNumber, dateOfBirth: p.dateOfBirth || null, gender: p.gender, address: p.address, nationality: p.nationality, campusId: a.campusId ?? campus?.id, admissionSessionId: a.sessionId }).onConflictDoNothing().returning({ id: s.students.id });
     if (!st) throw new AppError("CONFLICT", "A student record already exists for this applicant.");
-    await tx.insert(s.enrolments).values({ studentId: st.id, programmeId: a.programmeId, startSessionId: a.sessionId });
+    await tx.insert(s.enrolments).values({ studentId: st.id, programmeId: a.programmeId, startSessionId: a.sessionId }).onConflictDoNothing();
     await tx.update(s.users).set({ userType: "STUDENT", updatedAt: new Date() }).where(eq(s.users.id, a.userId));
     await tx.update(s.applications).set({ registeredAt: new Date(), updatedAt: new Date() }).where(eq(s.applications.id, a.id));
     await audit({ actor, action: "admission.student_registered", entityType: "student", entityId: st.id, summary: studentNumber, metadata: { applicationId: a.id, approver: actor.id } }, ctx, tx);

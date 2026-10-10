@@ -42,7 +42,7 @@ export const getSession = cache(async (): Promise<ResolvedSession | null> => {
 export async function requireLearnerPage(opts: { allowPasswordChange?: boolean } = {}) {
   const s = await getSession();
   if (!s || s.mfaPending) redirect("/login");
-  if (s.user.userType === "APPLICANT") redirect("/apply");
+  if (s.user.userType === "APPLICANT") redirect("/access");
   if (isStaffType(s.user.userType)) redirect("/admin");
   if (s.user.mustChangePassword && !opts.allowPasswordChange) redirect("/student/security?force=1");
   return s;

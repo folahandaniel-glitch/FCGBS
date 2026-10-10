@@ -11,6 +11,7 @@ import { decrypt, encrypt, hmac } from "../crypto";
 import { rateLimit } from "../rate-limit";
 import { getSetting } from "../settings";
 import { notifyUser } from "./notifications";
+import { ensureStudent } from "./selfservice";
 
 /**
  * Access codes (modelled on the Fodan College access-code engine). Rule 1: nobody who is not staff may use a learning
@@ -104,6 +105,8 @@ export async function activateCode(actor: Pick<Actor, "id" | "userType">, rawCod
     }
   }
   const p = result.period;
+  // Easy enrolment: an applicant who holds a code becomes a student straight away (formal admission still works for programmes needing it).
+  if (actor.userType === "APPLICANT") await ensureStudent(actor.id);
   await notifyUser({ userId: actor.id, category: "ACCESS", title: "Access activated", body: `Your access is active for ${p.durationDays} days, until ${fmtDate(p.currentExpiresAt)}.`, link: "/student" });
   return p;
 }

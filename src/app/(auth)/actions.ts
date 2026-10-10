@@ -24,11 +24,14 @@ export async function registerAction(_: ActionResult | null, form: FormData): Pr
     const r = await login({ identifier: d.email, password: d.password }, "public", ctx);
     await setSessionCookie(r.token, r.expiresAt);
     const code = (d.accessCode ?? "").trim();
+    let activated = false;
     if (code) {
       // A wrong code must not undo the registration: the person is told and can enter it again on the dashboard.
-      try { const sess = await resolveSessionToken(r.token); if (sess) await activateCode(sess.actor, code, ctx); } catch { dest = "/access?code=failed"; }
+      try { const sess = await resolveSessionToken(r.token); if (sess) { await activateCode(sess.actor, code, ctx); activated = true; } } catch { dest = "/access?code=failed"; }
     }
-    dest = dest || safeNext(d.next, "/apply");
+    // Easy path: a valid code opens the student portal and the free-certificate chooser. The formal application stays available.
+    const formal = d.next && d.next.startsWith("/apply") && d.next !== "/apply";
+    dest = dest || (activated ? "/student/courses/start" : formal ? safeNext(d.next, "/access") : "/access?welcome=1");
   } catch (e) {
     return fail(e);
   }
@@ -41,7 +44,7 @@ async function doLogin(portal: "public" | "backend", form: FormData): Promise<Ac
     const d = fd(form);
     const r = await login({ identifier: d.identifier, password: d.password }, portal, await reqCtx());
     await setSessionCookie(r.token, r.expiresAt);
-    const home = portal === "backend" ? "/admin" : r.userType === "APPLICANT" ? "/apply" : "/student";
+    const home = portal === "backend" ? "/admin" : r.userType === "APPLICANT" ? "/access" : "/student";
     if (r.mfaPending) dest = `/backend/verify${d.next ? `?next=${encodeURIComponent(d.next)}` : ""}`;
     else if (r.mustChangePassword) dest = portal === "backend" ? "/admin/security?force=password" : "/student/security?force=1";
     else dest = safeNext(d.next, home);

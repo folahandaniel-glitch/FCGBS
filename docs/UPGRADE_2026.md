@@ -20,3 +20,6 @@ Eight tracks — Apostolic, Pastoral, Evangelical, Prophetic, Revival & Reformat
 
 ## Quality guards
 `npx tsx scripts/check-quotes.ts` verifies every quotation marked "(Ref, KJV)" against the KJV text; `tests/unit/content.test.ts` checks every Scripture reference, Strong's number and course mapping; `npx vitest run` runs all 44 tests.
+
+## Easy enrolment (self-service)
+Register with the basics (name, email, password) and an access code. The code makes the account a student at once, opens every feature the code includes and lets the learner choose **one free certificate programme** (all its core courses open in the current semester automatically). Every other programme or course is a *request*: the learner ticks any number of them in **Programmes and courses**, is told to contact the admin (default 08067578112, editable in Settings → Self-service enrolment) and an administrator with `registration.manage` approves or declines in **Admin → Enrolment requests**. Approval enrols the learner and opens the course. Formal application and admission still work for those who want it. Tables: `enrolment_requests`; services: `src/server/services/selfservice.ts`.

@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Sign in", robots: { index: false } }
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; reset?: string }> }) {
   const sp = await searchParams;
   const s = await getSession();
-  if (s && !s.mfaPending) redirect(s.user.userType === "APPLICANT" ? "/apply" : s.user.userType === "STAFF" || s.user.userType === "SUPER_ADMIN" ? "/admin" : "/student");
+  if (s && !s.mfaPending) redirect(s.user.userType === "APPLICANT" ? "/access" : s.user.userType === "STAFF" || s.user.userType === "SUPER_ADMIN" ? "/admin" : "/student");
   return (
     <AuthShell title="Student & Applicant Sign In" subtitle="Welcome back to FCGBS.">
       {sp.reset && <Alert tone="success" className="mb-4">Your password was changed. Please sign in.</Alert>}

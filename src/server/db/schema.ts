@@ -1384,3 +1384,24 @@ export const accessExtensions = pgTable(
   },
   (t) => [index("access_ext_period_idx").on(t.periodId)],
 );
+
+/* --------------------------------------------- self-service enrolment requests */
+
+/** A learner's request to study another programme or course. An administrator approves or declines it. */
+export const enrolmentRequests = pgTable(
+  "enrolment_requests",
+  {
+    id: id(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(), // PROGRAMME | COURSE
+    programmeId: uuid("programme_id").references(() => programmes.id, { onDelete: "cascade" }),
+    courseId: uuid("course_id").references(() => courses.id, { onDelete: "cascade" }),
+    status: text("status").notNull().default("PENDING"), // PENDING | APPROVED | REJECTED | CANCELLED
+    studentNote: text("student_note"),
+    adminNote: text("admin_note"),
+    decidedBy: uuid("decided_by"),
+    decidedAt: ts("decided_at"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("enrolment_requests_user_idx").on(t.userId, t.status), index("enrolment_requests_status_idx").on(t.status, t.createdAt)],
+);
