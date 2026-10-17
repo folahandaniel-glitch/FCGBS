@@ -1,3 +1,4 @@
+import { PlaceMaterials } from "@/components/teachings/place-materials";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -33,6 +34,7 @@ export default async function TrackPage({ params, searchParams }: Props) {
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.filter((i) => i.level === l).map((i) => <li key={i.id}><TeachingCard t={i} /></li>)}</ul>
           </section>
         ))}
+        <PlaceMaterials place={`track:${t.slug}`} />
         <nav aria-label="Other tracks" className="flex flex-wrap gap-2 border-t border-line pt-6">
           {tracks.filter((x) => x.slug !== t.slug).map((x) => <Link key={x.id} href={`/teachings/${x.slug}`} className="rounded-full bg-white px-3.5 py-1.5 text-sm font-semibold text-navy-800 ring-1 ring-line hover:bg-gold-100">{x.title}</Link>)}
           <Link href="/teachings" className="rounded-full bg-navy-800 px-3.5 py-1.5 text-sm font-semibold text-white">All teachings</Link>

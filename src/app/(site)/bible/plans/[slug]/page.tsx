@@ -1,3 +1,4 @@
+import { PlaceMaterials } from "@/components/teachings/place-materials";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
@@ -23,7 +24,7 @@ export default async function PlanPage({ params }: Props) {
     <>
       <BibleBanner eyebrow={`${p.days}-day plan`} title={p.title} tone={COLOUR[p.colour]?.banner ?? "royal"}><p>{p.description}</p></BibleBanner>
       <BibleTabs active="/bible/plans" />
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><PlanProgress slug={p.slug} days={days} /></div>
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><PlanProgress slug={p.slug} days={days} /><PlaceMaterials place={`plan:${p.slug}`} /></div>
     </>
   );
 }

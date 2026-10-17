@@ -4,6 +4,9 @@ import { BibleBanner, BibleTabs } from "@/components/bible/ui";
 import { COLOUR } from "@/components/bible/colours";
 import { getContent } from "@/server/services/content";
 import { resolveRef } from "@/server/services/bible";
+import { getSession } from "@/server/http";
+import { MaterialList } from "@/components/teachings/materials";
+import { materialsByPrefix } from "@/server/services/attachments";
 
 export const metadata: Metadata = { title: "Bible Timeline", description: "A Genesis-to-Revelation timeline with theological explanation and graded archaeological evidence." };
 
@@ -18,6 +21,8 @@ export default async function TimelinePage({ searchParams }: { searchParams: Pro
   const { era } = await searchParams;
   const c = await getContent("bibleTimeline");
   const eras = new Map(c.eras.map((e) => [e.key, e]));
+  const sess = await getSession();
+  const files = await materialsByPrefix("timeline:", Boolean(sess && !sess.mfaPending && sess.user.userType !== "APPLICANT"));
   const items = era ? c.items.filter((i) => i.era === era) : c.items;
   return (
     <>
@@ -53,6 +58,7 @@ export default async function TimelinePage({ searchParams }: { searchParams: Pro
                         </ul>
                       </details>
                     )}
+                    <MaterialList items={files.filter((m) => m.place === `timeline:${it.id}`)} title="Files & links" />
                     <div className="flex flex-wrap gap-2">
                       {it.refs.map((r) => { const p = resolveRef(r); return p ? <Link key={r} href={p.href} className="rounded-full bg-royal-50 px-3 py-1 text-xs font-bold text-royal-700 hover:bg-royal-100">{p.label}</Link> : <span key={r} className="rounded-full bg-surface px-3 py-1 text-xs">{r}</span>; })}
                     </div>

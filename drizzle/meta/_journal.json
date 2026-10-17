@@ -43,6 +43,13 @@
       "when": 1792231853082,
       "tag": "0005_hard_questions",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792234640929,
+      "tag": "0006_chilly_energizer",
+      "breakpoints": true
     }
   ]
 }

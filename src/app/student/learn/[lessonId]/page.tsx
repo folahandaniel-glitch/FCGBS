@@ -1,3 +1,4 @@
+import { PlaceMaterials } from "@/components/teachings/place-materials";
 import Link from "next/link";
 import { Badge, Card, PageHeader } from "@/components/ui/primitives";
 import { Do } from "@/components/admin/row-actions";
@@ -39,6 +40,7 @@ export default async function LessonPage({ params }: { params: Promise<{ lessonI
         <p className="mt-6 text-xs text-muted">AI-generated content is never an official theological authority. Doctrine is taught as published in the Statement of Faith.</p>
       </Card>
       {mats.length > 0 && <div className="mt-6"><MaterialList items={mats} title="Study materials for this course" /></div>}
+      <PlaceMaterials place={`lesson:${id}`} title="Files & links for this lesson" />
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         {prev ? <Link href={`/student/learn/${prev.id}`} className="text-sm font-semibold text-royal-700 hover:underline">← {prev.title}</Link> : <span />}
         <Do variant="primary" size="md" label="Mark as complete" run={async () => { "use server"; return completeLessonAction(id); }} />

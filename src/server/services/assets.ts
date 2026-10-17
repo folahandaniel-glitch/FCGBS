@@ -14,8 +14,8 @@ const PUBLIC: AssetKind[] = ["BRAND", "SITE"];
 const IMAGE: FileKind[] = ["png", "jpg", "webp", "gif"];
 const DOCS: FileKind[] = ["pdf", "docx", "doc", "pptx", "ppt", "xlsx", "xls", "mp3", "png", "jpg", "webp"];
 
-export async function storeAsset(actor: Actor, file: { name: string; bytes: Buffer }, kind: AssetKind, ctx: ReqCtx, opts: { alt?: string; scopeRef?: string } = {}) {
-  await rateLimit("upload", actor.id, ctx);
+export async function storeAsset(actor: Actor, file: { name: string; bytes: Buffer }, kind: AssetKind, ctx: ReqCtx, opts: { alt?: string; scopeRef?: string; skipRateLimit?: boolean } = {}) {
+  if (!opts.skipRateLimit) await rateLimit("upload", actor.id, ctx);
   const cfg = await getSetting("uploads");
   const imageOnly = kind === "BRAND" || kind === "SITE" || kind === "AVATAR";
   const max = (imageOnly ? cfg.maxImageMb : cfg.maxFileMb) * 1_048_576;

@@ -28,10 +28,12 @@ export default async function ResourceEdit({ params, searchParams }: { params: P
     if (f.type === "datetime" && v instanceof Date) return v.toISOString().slice(0, 16);
     return String(v);
   };
+  const rec = row as Record<string, unknown>;
+  const filesKey = isNew ? null : r.key === "courses" ? `course:${id}` : r.key === "teachings" ? `teaching:${id}` : r.key === "hardQuestions" ? `question:${rec.slug}` : r.key === "teachingTracks" ? `track:${rec.slug}` : r.key === "programmes" ? `programme:${rec.code}` : null;
   return (
     <>
       <PageHeader title={isNew ? `Add ${r.singular.toLowerCase()}` : `Edit ${r.singular.toLowerCase()}`} breadcrumbs={[{ href: `/admin/r/${r.key}`, label: r.label }, { label: isNew ? "New" : String((row as Record<string, unknown>).title ?? (row as Record<string, unknown>).name ?? (row as Record<string, unknown>).code ?? "") }]}
-        actions={!isNew && r.key === "courses" ? <Link href={`/admin/courses/${id}`} className="rounded-xl bg-white px-3.5 py-2 text-sm font-semibold ring-1 ring-line hover:bg-royal-50">Lessons & weights</Link> : !isNew && r.key === "programmes" ? <Link href={`/admin/programmes/${id}`} className="rounded-xl bg-white px-3.5 py-2 text-sm font-semibold ring-1 ring-line hover:bg-royal-50">Course structure</Link> : undefined} />
+        actions={!isNew ? <>{!isNew && r.key === "courses" ? <Link href={`/admin/courses/${id}`} className="rounded-xl bg-white px-3.5 py-2 text-sm font-semibold ring-1 ring-line hover:bg-royal-50">Lessons & weights</Link> : !isNew && r.key === "programmes" ? <Link href={`/admin/programmes/${id}`} className="rounded-xl bg-white px-3.5 py-2 text-sm font-semibold ring-1 ring-line hover:bg-royal-50">Course structure</Link> : undefined}{filesKey && <Link href={`/admin/attachments?place=${encodeURIComponent(filesKey)}`} className="ml-2 rounded-xl bg-gold-500 px-3.5 py-2 text-sm font-semibold text-white hover:bg-gold-600">Files & links</Link>}</> : undefined} />
       {saved && <Alert tone="success" className="mb-4">Saved. The change is live and recorded in the audit log.</Alert>}
       {r.approvePerm && !canApprove && <Alert tone="info" className="mb-4">You can draft and submit for review. Only the Academic Board / publishing approver can mark this Approved or Published.</Alert>}
       <Card className="p-5">

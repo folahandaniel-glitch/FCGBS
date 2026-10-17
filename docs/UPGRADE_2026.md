@@ -33,3 +33,10 @@ Register with the basics (name, email, password) and an access code. The code ma
 - Fix: the route guard no longer treats `/teachings` as `/teach`.
 
 All new content states where Christians differ and avoids unsupported archaeological claims; add or correct entries in the backend at any time.
+
+## Files and links everywhere; the Upload centre
+
+- **Attach anything anywhere.** Study materials (PDF, DOCX, PPTX, MP3, video, web link) can now hang from a course, lesson, teaching, Hard Question, Bible topic, reading plan, timeline stop, teaching track or programme (`materials.place`, migration 0006). They show on the matching public/student page automatically.
+- **Admin → Files & links** (`/admin/attachments`): type a name, code or slug (typos are forgiven), then add, edit or remove files and links. Every course, teaching, question, track and programme edit page also has a "Files & links" button.
+- **Admin → Upload centre** (`/admin/upload-centre`): download a template that is rebuilt from the live site each time (it lists every place a file can go), fill it or skip it, then upload the template and all files in one go. The importer reads any column order or naming, matches misspelt places and file names, adds `https://`, turns YouTube/Vimeo links into embeds, fixes wrong types, makes titles from file names, places loose files by their names, skips duplicates, and keeps anything it cannot place as a Draft ("Waiting to be placed") so nothing is lost. A report shows what was fixed and where each item went. Logic: `src/core/attachments.ts` (pure, unit-tested) and `src/server/services/attachments.ts`.
+- Limit: the host accepts about 4 MB per upload request; larger audio or slides go in as links.

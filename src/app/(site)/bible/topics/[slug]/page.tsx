@@ -1,3 +1,4 @@
+import { PlaceMaterials } from "@/components/teachings/place-materials";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -38,6 +39,7 @@ export default async function TopicPage({ params }: Props) {
             </article>
           );
         })}
+        <PlaceMaterials place={`topic:${t.slug}`} />
         <div className="pt-4"><h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-gold-600">More topics</h2><div className="flex flex-wrap gap-2">{others.map((o) => <Link key={o.slug} href={`/bible/topics/${o.slug}`} className="rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-navy-800 ring-1 ring-line hover:bg-gold-100">{o.title}</Link>)}<Link href="/bible/topics" className="rounded-full bg-navy-800 px-3 py-1.5 text-sm font-semibold text-white">All topics</Link></div></div>
         <p className="text-xs text-muted">Scripture text: King James Version (public domain). Introductions are original to FCGBS.</p>
       </div>

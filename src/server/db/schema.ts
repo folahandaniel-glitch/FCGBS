@@ -1316,6 +1316,8 @@ export const materials = pgTable(
     description: text("description"),
     courseId: uuid("course_id").references(() => courses.id, { onDelete: "cascade" }),
     teachingId: uuid("teaching_id").references(() => teachings.id, { onDelete: "cascade" }),
+    /** Other places a material can hang from, as "type:key" — question:slug, lesson:id, timeline:id, topic:slug, plan:slug, track:slug, programme:code. Courses and teachings use their own columns. */
+    place: text("place"),
     assetId: uuid("asset_id"),
     url: text("url"),
     audience: text("audience").notNull().default("STUDENTS"), // PUBLIC | STUDENTS
@@ -1323,7 +1325,7 @@ export const materials = pgTable(
     status: contentStatusEnum("status").notNull().default("PUBLISHED"),
     createdAt: createdAt(),
   },
-  (t) => [index("materials_course_idx").on(t.courseId), index("materials_teaching_idx").on(t.teachingId)],
+  (t) => [index("materials_course_idx").on(t.courseId), index("materials_teaching_idx").on(t.teachingId), index("materials_place_idx").on(t.place)],
 );
 
 /* ------------------------------------------------------------ access codes */

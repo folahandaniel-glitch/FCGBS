@@ -1,3 +1,4 @@
+import { PlaceMaterials } from "@/components/teachings/place-materials";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Alert, ButtonLink } from "@/components/ui/primitives";
@@ -26,6 +27,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
   return (
     <>
       <Hero eyebrow={`${level}${department ? ` · ${department}` : ""}`} title={p.name}>{p.description}</Hero>
+      <div className="mx-auto max-w-5xl px-4 sm:px-6"><PlaceMaterials place={`programme:${p.code}`} /></div>
       <Section tone="white">
         <div className="grid gap-4 sm:grid-cols-4">
           {[["Code", p.code], ["Duration", `${p.durationMonths} months`], ["Credit units", String(p.minCredits)], ["Minimum CGPA", p.minCgpa.toFixed(1)]].map(([k, v]) => (

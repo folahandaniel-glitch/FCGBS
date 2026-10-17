@@ -1,3 +1,4 @@
+import { PlaceMaterials } from "@/components/teachings/place-materials";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -58,6 +59,7 @@ export default async function QuestionPage({ params }: Props) {
             </section>
           )}
           {q.readings && <section className="rounded-3xl bg-white p-6 shadow-card ring-1 ring-line"><h2 className="mb-2 font-display text-xl font-bold text-navy-800">Further reading</h2><ul className="list-disc space-y-1 pl-5 text-sm">{q.readings.split("\n").map((x) => x.trim()).filter(Boolean).map((x) => <li key={x}>{x}</li>)}</ul></section>}
+          <PlaceMaterials place={`question:${q.slug}`} />
         </div>
         <aside className="no-print space-y-5">
           <ListenButton targetId="question-body" title={q.title} />
