@@ -19,7 +19,7 @@ export function BibleBanner({ eyebrow, title, children, tone = "royal" }: { eyeb
 }
 
 export function BibleTabs({ active }: { active?: string }) {
-  const tabs = [["/bible", "Read"], ["/bible/search", "Concordance"], ["/bible/strongs", "Hebrew & Greek"], ["/bible/topics", "Topics"], ["/bible/plans", "Reading plans"], ["/bible/languages", "Learn the languages"], ["/bible/notes", "My notes"]];
+  const tabs = [["/bible", "Read"], ["/bible/timeline", "Timeline"], ["/bible/search", "Concordance"], ["/bible/strongs", "Hebrew & Greek"], ["/bible/topics", "Topics"], ["/bible/plans", "Reading plans"], ["/bible/languages", "Learn the languages"], ["/bible/notes", "My notes"]];
   return (
     <nav aria-label="Bible tools" className="no-scrollbar sticky top-[4.25rem] z-30 overflow-x-auto border-b border-line bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl gap-1 px-4 py-2 sm:px-6">

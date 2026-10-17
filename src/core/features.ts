@@ -6,6 +6,7 @@
 export const FEATURES = {
   BIBLE: { label: "Bible Hub", group: "Bible", description: "Bible reader, concordance, Strong's Hebrew & Greek lexicon, topics, reading plans, notes." },
   TEACHINGS: { label: "Teaching Library", group: "Teachings", description: "Apostolic, Pastoral, Evangelical, Prophetic and Revival teachings, with Word, PowerPoint and PDF downloads." },
+  QUESTIONS: { label: "Hard Questions & Apologetics", group: "Bible", description: "Disputed and difficult questions answered exegetically, historically, archaeologically, apostolically, prophetically and theologically." },
   COURSES: { label: "Courses & Lessons", group: "Learning", description: "Registered courses, lessons, study materials and attendance." },
   ASSESSMENTS: { label: "Assignments & Examinations", group: "Learning", description: "Assignments, tests and examinations." },
   RESULTS: { label: "Results & Records", group: "Records", description: "Results, GPA, transcript and certificate requests." },

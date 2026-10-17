@@ -4,7 +4,7 @@ import { freshDb } from "../support/db";
 import { seedStructure } from "@/server/seed";
 import { registerApplicant } from "@/server/services/auth";
 import { activateCode, generateCodes } from "@/server/services/access";
-import { certificateProgrammes, claimFreeCertificate, decideRequest, exploreCatalogue, myEnrolments, pendingRequests, requestEnrolment, selfState } from "@/server/services/selfservice";
+import { certificateProgrammes, claimFreeCertificate, decideRequest, exploreCatalogue, myEnrolments, openNow, pendingRequests, requestEnrolment, selfState } from "@/server/services/selfservice";
 import { getDb } from "@/server/db";
 import { courseRegistrations, courses, programmes, users } from "@/server/db/schema";
 import type { Actor } from "@/server/audit";
@@ -73,4 +73,22 @@ it("other programmes and courses are requests that an administrator approves or 
   const stillPending = await pendingRequests();
   expect(stillPending.length).toBe(0);
   void programmes; void courses; void and;
+});
+
+it("one access code opens every course at once, and doing it twice adds nothing", async () => {
+  await registerApplicant({ firstName: "Bob", lastName: "Open", email: "bob@example.com", password: PW, confirmPassword: PW, acceptTerms: true }, ctx);
+  const [b] = await getDb().select().from(users).where(eq(users.email, "bob@example.com"));
+  let bob: Actor = { id: b.id, userType: "APPLICANT", permissions: new Set(), name: "Bob", email: b.email };
+  const { codes } = await generateCodes(admin, { count: 1, durationDays: 30 }, ctx);
+  await activateCode(bob, codes[0], ctx);
+  bob = { ...bob, userType: "STUDENT" };
+
+  const published = await getDb().select({ id: courses.id }).from(courses).where(eq(courses.status, "PUBLISHED"));
+  const first = await openNow(bob, { all: true }, ctx);
+  expect(first.opened).toBeGreaterThan(50);
+  const enrols = await myEnrolments(bob.id);
+  const regs = await getDb().select().from(courseRegistrations).where(eq(courseRegistrations.enrolmentId, enrols[0].id));
+  expect(regs.length).toBe(published.length);
+  const again = await openNow(bob, { all: true }, ctx);
+  expect(again.opened).toBe(0);
 });

@@ -16,8 +16,8 @@ export default async function StudentLayout({ children }: { children: React.Reac
     { title: "Learn", items: [
       { href: "/student", label: "Dashboard", icon: <Home /> },
       { href: "/student/courses", label: "My courses", icon: <BookOpen /> },
-      { href: "/student/courses/start", label: "Free certificate", icon: <Award /> },
-      { href: "/student/courses/explore", label: "Explore & request", icon: <Landmark /> },
+      { href: "/student/courses/start", label: "Open courses", icon: <Award /> },
+      { href: "/student/courses/explore", label: "All programmes & courses", icon: <Landmark /> },
       { href: "/bible", label: "Bible Hub", icon: <BookText /> },
       { href: "/teachings", label: "Teaching Library", icon: <ScrollText /> },
       { href: "/student/results", label: "Results & GPA", icon: <ClipboardCheck /> },

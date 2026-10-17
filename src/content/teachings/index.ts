@@ -7,6 +7,7 @@ import { REVIVAL } from "./revival";
 import { FOUNDATIONS } from "./foundations";
 import { KINGDOM } from "./kingdom";
 import { TECHNOLOGY } from "./technology";
+import { EXEGESIS } from "./exegesis";
 
 export { TRACKS } from "./tracks";
-export const TEACHINGS: TeachingSeed[] = [...APOSTOLIC, ...PASTORAL, ...EVANGELICAL, ...PROPHETIC, ...REVIVAL, ...FOUNDATIONS, ...KINGDOM, ...TECHNOLOGY];
+export const TEACHINGS: TeachingSeed[] = [...APOSTOLIC, ...PASTORAL, ...EVANGELICAL, ...PROPHETIC, ...REVIVAL, ...FOUNDATIONS, ...KINGDOM, ...TECHNOLOGY, ...EXEGESIS];

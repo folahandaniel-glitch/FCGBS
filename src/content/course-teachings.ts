@@ -47,4 +47,15 @@ export const COURSE_TEACHINGS: Record<string, string[]> = {
   TEC101: ["a-biblical-view-of-technology", "low-data-ministry-audio-and-offline"], TEC102: ["safety-and-privacy-online"], TEC103: ["church-media-live-streaming-audio"], TEC104: ["low-data-ministry-audio-and-offline"],
   TEC201: ["using-ai-tools-responsibly"], TEC202: ["websites-apps-and-social-media-for-churches"], TEC203: ["records-spreadsheets-and-church-administration", "safety-and-privacy-online"], TEC205: ["evangelism-in-the-marketplace-and-online"],
   TEC206: ["digital-skills-for-livelihood"], TEC207: ["how-to-study-the-bible", "using-ai-tools-responsibly"], TEC208: ["low-data-ministry-audio-and-offline", "church-media-live-streaming-audio"], RES202: ["using-ai-tools-responsibly"],
+  // exegesis studies (worked passage examples) inside the Bible and theology courses
+  BIB107: ["exegesis-a-method-you-can-use", "genesis-1-1-5-in-the-beginning"], BIB208: ["exegesis-a-method-you-can-use", "colossians-1-15-20-the-supremacy-of-christ", "matthew-5-1-12-the-beatitudes"],
+  BIB201: ["genesis-1-1-5-in-the-beginning", "genesis-3-1-15-the-fall-and-the-first-promise", "exodus-3-1-15-the-burning-bush-and-the-name"], BIB203: ["psalm-23-the-lord-is-my-shepherd"], BIB210: ["psalm-23-the-lord-is-my-shepherd"],
+  BIB204: ["isaiah-53-the-suffering-servant"], BIB205: ["matthew-5-1-12-the-beatitudes", "john-1-1-18-the-word-became-flesh"],
+  BIB206: ["romans-3-21-26-the-righteousness-of-god", "romans-8-1-17-life-in-the-spirit", "ephesians-2-1-10-dead-made-alive", "philippians-2-5-11-the-mind-of-christ", "colossians-1-15-20-the-supremacy-of-christ"],
+  BIB207: ["revelation-1-the-vision-of-the-risen-christ"],
+  BIB301: ["exegesis-a-method-you-can-use", "john-1-1-18-the-word-became-flesh", "romans-3-21-26-the-righteousness-of-god", "romans-8-1-17-life-in-the-spirit", "philippians-2-5-11-the-mind-of-christ"],
+  BIB302: ["ephesians-2-1-10-dead-made-alive", "colossians-1-15-20-the-supremacy-of-christ"], BIB303: ["matthew-5-1-12-the-beatitudes", "revelation-1-the-vision-of-the-risen-christ"],
+  BIB304: ["isaiah-53-the-suffering-servant", "genesis-3-1-15-the-fall-and-the-first-promise", "psalm-23-the-lord-is-my-shepherd"],
+  THE201: ["genesis-1-1-5-in-the-beginning", "genesis-3-1-15-the-fall-and-the-first-promise"],
+  HEB301: ["genesis-1-1-5-in-the-beginning", "exodus-3-1-15-the-burning-bush-and-the-name", "isaiah-53-the-suffering-servant"], GRK301: ["john-1-1-18-the-word-became-flesh", "romans-3-21-26-the-righteousness-of-god", "philippians-2-5-11-the-mind-of-christ"],
 };

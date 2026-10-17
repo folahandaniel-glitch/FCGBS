@@ -9,7 +9,7 @@ import { MobileNav } from "./mobile-nav";
 export async function SiteHeader() {
   const [brand, nav] = await Promise.all([getBrand(), getContent("nav")]);
   const base = [...nav.items];
-  for (const extra of [{ label: "Bible", href: "/bible" }, { label: "Teachings", href: "/teachings" }]) if (!base.some((i) => i.href === extra.href)) base.splice(Math.min(3, base.length), 0, extra);
+  for (const extra of [{ label: "Bible", href: "/bible" }, { label: "Teachings", href: "/teachings" }, { label: "Hard Questions", href: "/questions" }]) if (!base.some((i) => i.href === extra.href)) base.splice(Math.min(3, base.length), 0, extra);
   const items = base.filter((i) => (i.href === "/technology-hub" ? brand.flags.techHub : i.href === "/kingdom-enterprise" ? brand.flags.kingdomHub : i.href === "/library" ? brand.flags.library : true));
   return (
     <>
@@ -66,7 +66,7 @@ export async function SiteFooter() {
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">{brand.site.footerNote}</p>
           <p className="mt-3 max-w-sm text-xs italic text-white/55">“{brand.motto}” — {brand.mottoRef}</p>
         </div>
-        {col("Study", [["/programmes", "Programmes"], ["/courses", "Courses"], ["/bible", "Bible, Concordance, Hebrew & Greek"], ["/teachings", "Teaching Library"], ["/access", "Enter access code"], ["/departments", "Departments"], ["/fivefold-ministry", "Fivefold Ministry"], ["/ministry-formation", "Ministry Formation"], ["/technology-hub", "Technology Hub"], ["/kingdom-enterprise", "Kingdom Enterprise"]])}
+        {col("Study", [["/programmes", "Programmes"], ["/courses", "Courses"], ["/bible", "Bible, Concordance, Hebrew & Greek"], ["/teachings", "Teaching Library"], ["/questions", "Hard Questions"], ["/bible/timeline", "Bible Timeline"], ["/access", "Enter access code"], ["/departments", "Departments"], ["/fivefold-ministry", "Fivefold Ministry"], ["/ministry-formation", "Ministry Formation"], ["/technology-hub", "Technology Hub"], ["/kingdom-enterprise", "Kingdom Enterprise"]])}
         {col("School", [["/about", "About FCGBS"], ["/vision-mission", "Vision & Mission"], ["/statement-of-faith", "Statement of Faith"], ["/leadership", "Founder & Leadership"], ["/faculty", "Faculty"], ["/admissions", "Admissions"], ["/library", "Library"], ["/news", "News & Events"], ["/verify", "Verify a Certificate"]])}
         <div>
           <p className="text-sm font-bold text-white">Contact</p>

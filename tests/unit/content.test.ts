@@ -10,6 +10,8 @@ import { ELECTIVE_ADDITIONS, NEW_PROGRAMMES } from "@/content/programmes-more";
 import { MATERIALS } from "@/content/materials";
 import { BIBLE_TOPICS } from "@/content/bible-topics";
 import { BIBLE_LANGUAGES } from "@/content/bible-languages";
+import { BIBLE_TIMELINE } from "@/content/bible-timeline";
+import { QUESTIONS_SEED } from "@/content/questions";
 
 const bsb: string[][][] = JSON.parse(zlib.gunzipSync(fs.readFileSync("data/bible/bsb.json.gz")).toString());
 const strongs = JSON.parse(zlib.gunzipSync(fs.readFileSync("data/bible/strongs.json.gz")).toString());
@@ -31,6 +33,18 @@ describe("seed content integrity", () => {
     for (const t of TEACHINGS) for (const r of t.scriptures) expect(validRef(r), `${t.slug}: ${r}`).toBe(true);
     for (const t of BIBLE_TOPICS) for (const r of t.refs) expect(validRef(r.ref), `${t.slug}: ${r.ref}`).toBe(true);
     for (const w of BIBLE_LANGUAGES.studies) { expect(strongs[w.id], w.id).toBeTruthy(); for (const r of w.refs) expect(validRef(r), `${w.id}: ${r}`).toBe(true); }
+  });
+  it("uses only real Strong's numbers in exegesis studies", () => {
+    for (const t of TEACHINGS.filter((x) => x.track === "exegesis")) for (const m of t.body.matchAll(/([HG]d{1,4})/g)) expect(strongs[m[1]], `${t.slug}: ${m[1]}`).toBeTruthy();
+  });
+  it("has unique hard questions and a timeline with real references", () => {
+    const slugs = QUESTIONS_SEED.map((q) => q.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+    for (const q of QUESTIONS_SEED) { expect(q.exegetical?.length ?? 0, q.slug).toBeGreaterThan(800); for (const r of q.scriptures) expect(validRef(r), `${q.slug}: ${r}`).toBe(true); }
+    const eras = new Set(BIBLE_TIMELINE.eras.map((e) => e.key));
+    const ids = BIBLE_TIMELINE.items.map((i) => i.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const i of BIBLE_TIMELINE.items) { expect(eras.has(i.era), i.id).toBe(true); for (const r of i.refs) expect(validRef(r), `${i.id}: ${r}`).toBe(true); }
   });
   it("maps courses, lessons, programmes and materials to things that exist", () => {
     const teachings = new Set(TEACHINGS.map((t) => t.slug));

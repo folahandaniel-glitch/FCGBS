@@ -9,6 +9,7 @@ import { parseRef } from "../src/core/bible";
 import { TEACHINGS } from "../src/content/teachings";
 import { LESSONS } from "../src/content/lessons";
 import { MORE_LESSONS } from "../src/content/lessons-more";
+import { QUESTIONS_SEED } from "../src/content/questions";
 
 const kjv: string[][][] = JSON.parse(zlib.gunzipSync(fs.readFileSync("data/bible/kjv.json.gz")).toString());
 const plain = (t: string) => t.replace(/\{[HG]\d+\}/g, "").replace(/<\/?em>/g, "").replace(/\[|\]/g, "");
@@ -33,7 +34,8 @@ function passage(ref: string, lastBook: string): { text: string | null; book: st
   return { text: texts.every(Boolean) ? texts.join(" ") : null, book };
 }
 
-const items = [...TEACHINGS.map((t) => ({ id: t.slug, body: t.body })), ...LESSONS.map((l) => ({ id: `${l.course}:${l.title}`, body: l.body })), ...MORE_LESSONS.map((l) => ({ id: `${l.course}:${l.title}`, body: l.body }))];
+const lensText = (q: (typeof QUESTIONS_SEED)[number]) => [q.summary, q.exegetical, q.genealogical, q.archaeological, q.apostolic, q.prophetic, q.theological, q.views, q.pastoral].filter(Boolean).join(" ");
+const items = [...QUESTIONS_SEED.map((q) => ({ id: `Q:${q.slug}`, body: lensText(q) })), ...TEACHINGS.map((t) => ({ id: t.slug, body: t.body })), ...LESSONS.map((l) => ({ id: `${l.course}:${l.title}`, body: l.body })), ...MORE_LESSONS.map((l) => ({ id: `${l.course}:${l.title}`, body: l.body }))];
 let n = 0, bad = 0;
 for (const it of items) {
   const re = /["“]([^"”]{6,}?)["”]\s*\(([^()]*?),\s*KJV\)/g;

@@ -6,6 +6,7 @@ import { MORE_LESSONS } from "@/content/lessons-more";
 import { COURSE_TEACHINGS } from "@/content/course-teachings";
 import { ELECTIVE_ADDITIONS, NEW_PROGRAMMES } from "@/content/programmes-more";
 import { MATERIALS } from "@/content/materials";
+import { QUESTIONS_SEED } from "@/content/questions";
 import { FAQS, POLICIES } from "@/content/policies";
 import { TEACHINGS, TRACKS } from "@/content/teachings";
 import type { DB } from "../db";
@@ -169,6 +170,15 @@ export async function seedStructure(db: DB) {
   }
   for (const code of new Set(MORE_LESSONS.map((l) => l.course))) {
     await addLessons(code, "Lessons", MORE_LESSONS.filter((l) => l.course === code).map((l) => ({ title: l.title, summary: l.summary, body: l.body, minutes: l.minutes })));
+  }
+
+  // ---- hard questions, added by slug (administrators own them afterwards)
+  {
+    const have = new Set((await db.select({ slug: s.hardQuestions.slug }).from(s.hardQuestions)).map((q) => q.slug));
+    const fresh = QUESTIONS_SEED.filter((q) => !have.has(q.slug));
+    for (let i = 0; i < fresh.length; i += 10) {
+      await db.insert(s.hardQuestions).values(fresh.slice(i, i + 10).map((q, j) => ({ slug: q.slug, title: q.title, category: q.category, summary: q.summary, exegetical: q.exegetical ?? null, genealogical: q.genealogical ?? null, archaeological: q.archaeological ?? null, apostolic: q.apostolic ?? null, prophetic: q.prophetic ?? null, theological: q.theological ?? null, views: q.views ?? null, pastoral: q.pastoral ?? null, scriptures: q.scriptures.join("\n"), readings: (q.readings ?? []).join("\n"), featured: Boolean(q.featured), sort: i + j, status: "PUBLISHED" as const }))).onConflictDoNothing();
+    }
   }
 
   // ---- starter study materials (links), added once per owner and title

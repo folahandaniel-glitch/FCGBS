@@ -69,7 +69,7 @@ async function registerCourses(db: Executor, enrolmentId: string, courseIds: str
   if (!courseIds.length) return 0;
   const { map } = await offeringsFor(db, courseIds);
   const already = new Set((await db.select({ c: s.courseRegistrations.courseId }).from(s.courseRegistrations).where(and(eq(s.courseRegistrations.enrolmentId, enrolmentId), ne(s.courseRegistrations.status, "DROPPED")))).map((r) => r.c));
-  const rows = courseIds.filter((c) => !already.has(c) && map.get(c)).map((courseId) => ({ enrolmentId, courseId, offeringId: map.get(courseId)!, status: "APPROVED" as const, source: "REGISTERED" as const, approvedBy: approver ?? undefined, note: approver ? "Approved by administrator" : "Free certificate programme" }));
+  const rows = courseIds.filter((c) => !already.has(c) && map.get(c)).map((courseId) => ({ enrolmentId, courseId, offeringId: map.get(courseId)!, status: "APPROVED" as const, source: "REGISTERED" as const, approvedBy: approver ?? undefined, note: approver ? "Approved by administrator" : "Opened with access code" }));
   if (rows.length) await db.insert(s.courseRegistrations).values(rows).onConflictDoNothing();
   return rows.length;
 }
@@ -86,6 +86,17 @@ async function enrol(db: Executor, studentId: string, programmeId: string, note:
 const coreCourseIds = async (db: Executor, programmeId: string) =>
   (await db.select({ c: s.programmeCourses.courseId }).from(s.programmeCourses).innerJoin(s.courses, eq(s.courses.id, s.programmeCourses.courseId)).where(and(eq(s.programmeCourses.programmeId, programmeId), eq(s.programmeCourses.kind, "CORE"), eq(s.courses.status, "PUBLISHED"))).orderBy(asc(s.programmeCourses.year), asc(s.programmeCourses.semester), asc(s.programmeCourses.sort))).map((r) => r.c);
 
+/** The enrolment a single course belongs under: one whose programme contains it, else the learner's first, else the lowest-level programme that has it. */
+async function enrolmentForCourse(tx: Executor, studentId: string, courseId: string, note: string) {
+  const mine = await tx.select({ id: s.enrolments.id, programmeId: s.enrolments.programmeId }).from(s.enrolments).where(and(eq(s.enrolments.studentId, studentId), eq(s.enrolments.status, "ACTIVE"))).orderBy(asc(s.enrolments.createdAt));
+  const links = await tx.select({ p: s.programmeCourses.programmeId }).from(s.programmeCourses).where(eq(s.programmeCourses.courseId, courseId));
+  const hit = mine.find((e) => links.some((l) => l.p === e.programmeId))?.id ?? mine[0]?.id;
+  if (hit) return hit;
+  const [home] = await tx.select({ id: s.programmes.id }).from(s.programmeCourses).innerJoin(s.programmes, eq(s.programmes.id, s.programmeCourses.programmeId)).innerJoin(s.programmeLevels, eq(s.programmeLevels.id, s.programmes.levelId)).where(and(eq(s.programmeCourses.courseId, courseId), eq(s.programmes.status, "PUBLISHED"))).orderBy(asc(s.programmeLevels.rank)).limit(1);
+  if (!home) throw new AppError("RULE_VIOLATION", "This course is not part of any published programme. Add it to a programme first.");
+  return enrol(tx, studentId, home.id, note);
+}
+
 /* ------------------------------------------------------------------ read models */
 
 export async function certificateProgrammes() {
@@ -93,6 +104,14 @@ export async function certificateProgrammes() {
     .select({ id: s.programmes.id, code: s.programmes.code, slug: s.programmes.slug, name: s.programmes.name, description: s.programmes.description, months: s.programmes.durationMonths, credits: s.programmes.minCredits, level: s.programmeLevels.key, levelName: s.programmeLevels.name, rank: s.programmeLevels.rank })
     .from(s.programmes).innerJoin(s.programmeLevels, eq(s.programmeLevels.id, s.programmes.levelId))
     .where(and(eq(s.programmes.status, "PUBLISHED"), eq(s.programmeLevels.key, "CERTIFICATE"))).orderBy(asc(s.programmes.sort));
+}
+
+/** Every published programme (used when one code opens everything). */
+export async function allProgrammes() {
+  return getDb()
+    .select({ id: s.programmes.id, code: s.programmes.code, slug: s.programmes.slug, name: s.programmes.name, description: s.programmes.description, months: s.programmes.durationMonths, credits: s.programmes.minCredits, level: s.programmeLevels.key, levelName: s.programmeLevels.name, rank: s.programmeLevels.rank })
+    .from(s.programmes).innerJoin(s.programmeLevels, eq(s.programmeLevels.id, s.programmes.levelId))
+    .where(eq(s.programmes.status, "PUBLISHED")).orderBy(asc(s.programmeLevels.rank), asc(s.programmes.sort));
 }
 
 export async function myEnrolments(userId: string, db: Executor = getDb()) {
@@ -219,14 +238,7 @@ export async function decideRequest(admin: Actor, id: string, decision: "APPROVE
         const n = await registerCourses(tx, enrolmentId, await coreCourseIds(tx, r.programmeId), admin.id);
         summary = `programme enrolled, ${n} course(s) opened`;
       } else if (r.kind === "COURSE" && r.courseId) {
-        const mine = await tx.select({ id: s.enrolments.id, programmeId: s.enrolments.programmeId }).from(s.enrolments).where(and(eq(s.enrolments.studentId, st.id), eq(s.enrolments.status, "ACTIVE"))).orderBy(asc(s.enrolments.createdAt));
-        const links = await tx.select({ p: s.programmeCourses.programmeId }).from(s.programmeCourses).where(eq(s.programmeCourses.courseId, r.courseId));
-        let target = mine.find((e) => links.some((l) => l.p === e.programmeId))?.id ?? mine[0]?.id;
-        if (!target) {
-          const [home] = await tx.select({ id: s.programmes.id }).from(s.programmeCourses).innerJoin(s.programmes, eq(s.programmes.id, s.programmeCourses.programmeId)).innerJoin(s.programmeLevels, eq(s.programmeLevels.id, s.programmes.levelId)).where(and(eq(s.programmeCourses.courseId, r.courseId), eq(s.programmes.status, "PUBLISHED"))).orderBy(asc(s.programmeLevels.rank)).limit(1);
-          if (!home) throw new AppError("RULE_VIOLATION", "This course is not part of any published programme. Add it to a programme first.");
-          target = await enrol(tx, st.id, home.id, APPROVED);
-        }
+        const target = await enrolmentForCourse(tx, st.id, r.courseId, APPROVED);
         const n = await registerCourses(tx, target, [r.courseId], admin.id);
         summary = `course opened (${n})`;
       }
@@ -235,5 +247,51 @@ export async function decideRequest(admin: Actor, id: string, decision: "APPROVE
     await audit({ actor: admin, action: `selfservice.${decision === "APPROVE" ? "approved" : "rejected"}`, entityType: "enrolment_request", entityId: id, summary, metadata: { userId: r.userId, kind: r.kind, note } }, ctx, tx);
     await notifyUser({ userId: r.userId, category: "REGISTRATION", title: decision === "APPROVE" ? "Your request was approved" : "Your request was not approved", body: decision === "APPROVE" ? "The course is now open in My courses." : `${note || "Please contact the school office"} (${cfg.approvalContact}).`, link: "/student/courses" }, tx);
     return { userId: r.userId };
+  });
+}
+
+/**
+ * One access code opens every course. Opens the chosen programmes and courses at once, or everything (`all`), with no
+ * approval step. (Set Settings → Self-service enrolment → "One code opens all courses" off to return to approval.)
+ */
+export async function openNow(actor: Actor, items: { programmeIds?: string[]; courseIds?: string[]; all?: boolean }, ctx: ReqCtx) {
+  const cfg = await getSetting("selfService");
+  if (!cfg.enabled) throw new AppError("FORBIDDEN", "Self-service enrolment is not available right now.");
+  if (!cfg.openAll) throw new AppError("RULE_VIOLATION", `Please send a request and contact the school on ${cfg.approvalContact}.`);
+  const programmeIds = [...new Set(items.programmeIds ?? [])].slice(0, 20);
+  const courseIds = [...new Set(items.courseIds ?? [])].slice(0, 200);
+  if (!items.all && !programmeIds.length && !courseIds.length) throw new AppError("VALIDATION", "Select at least one programme or course.");
+  return getDb().transaction(async (tx) => {
+    await tx.execute(sql`SELECT id FROM users WHERE id = ${actor.id} FOR UPDATE`);
+    const st = await ensureStudent(actor.id, tx);
+    let opened = 0;
+    for (const pid of programmeIds) {
+      const [p] = await tx.select({ id: s.programmes.id }).from(s.programmes).where(and(eq(s.programmes.id, pid), eq(s.programmes.status, "PUBLISHED")));
+      if (!p) continue;
+      const enrolmentId = await enrol(tx, st.id, p.id, FREE);
+      opened += await registerCourses(tx, enrolmentId, await coreCourseIds(tx, p.id), null);
+    }
+    let want = courseIds;
+    if (items.all) want = (await tx.select({ id: s.courses.id }).from(s.courses).where(eq(s.courses.status, "PUBLISHED"))).map((c) => c.id);
+    if (items.all) {
+      // everything under the learner's first enrolment (created in the first certificate programme when there is none)
+      const [first] = await tx.select({ id: s.enrolments.id }).from(s.enrolments).where(and(eq(s.enrolments.studentId, st.id), eq(s.enrolments.status, "ACTIVE"))).orderBy(asc(s.enrolments.createdAt)).limit(1);
+      let target = first?.id;
+      if (!target) {
+        const [prog] = await tx.select({ id: s.programmes.id }).from(s.programmes).innerJoin(s.programmeLevels, eq(s.programmeLevels.id, s.programmes.levelId)).where(and(eq(s.programmes.status, "PUBLISHED"), eq(s.programmeLevels.key, "CERTIFICATE"))).orderBy(asc(s.programmes.sort)).limit(1);
+        if (!prog) throw new AppError("NOT_CONFIGURED", "No programme is published yet.");
+        target = await enrol(tx, st.id, prog.id, FREE);
+      }
+      opened += await registerCourses(tx, target, want, null);
+    } else {
+      for (const cid of want) {
+        const [c] = await tx.select({ id: s.courses.id }).from(s.courses).where(and(eq(s.courses.id, cid), eq(s.courses.status, "PUBLISHED")));
+        if (!c) continue;
+        const target = await enrolmentForCourse(tx, st.id, c.id, FREE);
+        opened += await registerCourses(tx, target, [c.id], null);
+      }
+    }
+    await audit({ actor, action: "selfservice.opened", entityType: "student", entityId: st.id, summary: `${opened} course(s) opened with an access code${items.all ? " (all)" : ""}` }, ctx, tx);
+    return { opened };
   });
 }

@@ -10,6 +10,7 @@ import { rateLimit } from "@/server/rate-limit";
 import { exportDoc, EXPORT_TYPES, type ExportDoc, type ExportFormat } from "@/server/services/export";
 import { lessonForLearner } from "@/server/services/learner";
 import { getTeachingBySlug, scriptureList } from "@/server/services/teachings";
+import { getQuestion, LENSES } from "@/server/services/questions";
 
 const FORMATS = Object.keys(EXPORT_TYPES) as ExportFormat[];
 const slugify = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "material";
@@ -25,7 +26,7 @@ export const GET = api<{ kind: string; id: string }>({ auth: "none" }, async ({ 
   await rateLimit("export", ctx.ip ?? "anon", ctx);
   const gated = await getSession();
   if (!gated || gated.mfaPending) throw new AppError("UNAUTHENTICATED", "Please sign in and enter your access code.");
-  await requireFeature(gated.user.id, params.kind === "lesson" ? "COURSES" : "TEACHINGS", gated.user.userType);
+  await requireFeature(gated.user.id, params.kind === "lesson" ? "COURSES" : params.kind === "question" ? "QUESTIONS" : "TEACHINGS", gated.user.userType);
   const brand = await getBrand();
   let doc: ExportDoc;
   if (params.kind === "teaching") {
@@ -33,6 +34,11 @@ export const GET = api<{ kind: string; id: string }>({ auth: "none" }, async ({ 
     if (!t) throw new AppError("NOT_FOUND", "Not found.");
     if (t.audience !== "PUBLIC") { const sess = await getSession(); if (!sess || sess.mfaPending || sess.user.userType === "APPLICANT") throw new AppError("UNAUTHENTICATED", "Please sign in."); }
     doc = { title: t.title, subtitle: t.summary ?? undefined, kicker: t.trackTitle, scriptures: scriptureList(t.scriptures), body: t.body ?? "", school: brand.name, note: "Scripture quotations are from the King James Version (public domain) unless stated. Original teaching material of FCGBS." };
+  } else if (params.kind === "question") {
+    const q = await getQuestion(params.id);
+    if (!q) throw new AppError("NOT_FOUND", "Not found.");
+    const body = [q.summary ? `## The short answer\n${q.summary}` : "", ...LENSES.map((l) => { const v = (q[l.key as keyof typeof q] as string | null)?.trim(); return v ? `## ${l.label}\n${v}` : ""; })].filter(Boolean).join("\n\n");
+    doc = { title: q.title, subtitle: q.summary ?? undefined, kicker: `Hard Questions · ${q.category}`, scriptures: scriptureList(q.scriptures), body, school: brand.name, note: "Scripture quotations are from the King James Version (public domain) unless stated. Original material of FCGBS." };
   } else if (params.kind === "lesson") {
     const sess = await getSession();
     if (!sess || sess.mfaPending) throw new AppError("UNAUTHENTICATED", "Please sign in.");

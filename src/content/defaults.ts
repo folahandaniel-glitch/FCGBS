@@ -10,6 +10,7 @@
 import { BIBLE_TOPICS, type BibleTopic } from "./bible-topics";
 import { BIBLE_PLANS, type ReadingPlan } from "./bible-plans";
 import { BIBLE_LANGUAGES } from "./bible-languages";
+import { BIBLE_TIMELINE } from "./bible-timeline";
 
 export interface Slide {
   title: string;
@@ -292,6 +293,7 @@ export const CONTENT_DEFAULTS = {
   bibleTopics: { intro: "Verses gathered by theme. Each reference opens in the Bible reader.", items: BIBLE_TOPICS as BibleTopic[] },
   biblePlans: { intro: "Choose a plan and read at your own pace. Your progress is saved on this device only.", items: BIBLE_PLANS as ReadingPlan[] },
   bibleLanguages: BIBLE_LANGUAGES,
+  bibleTimeline: BIBLE_TIMELINE,
 } as const;
 
 export type ContentKey = keyof typeof CONTENT_DEFAULTS;
@@ -315,4 +317,5 @@ export const CONTENT_LABELS: Record<ContentKey, { label: string; group: string; 
   bibleTopics: { label: "Bible topics", group: "Bible & Teaching", help: "Topical Bible study index: add topics and Scripture references." },
   biblePlans: { label: "Bible reading plans", group: "Bible & Teaching", help: "Reading plans: name, days and the books or chapters to read." },
   bibleLanguages: { label: "Hebrew & Greek study", group: "Bible & Teaching", help: "Alphabets, notes and word studies for the languages page." },
+  bibleTimeline: { label: "Bible timeline", group: "Bible & Teaching", help: "Genesis-to-Revelation timeline: eras, entries, theology, archaeological evidence and Scripture references." },
 };

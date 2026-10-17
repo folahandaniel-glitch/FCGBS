@@ -45,6 +45,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
     { href: "/admin/r/posts", label: "News, events & FAQs", icon: <Newspaper />, perm: ["content.manage"] },
     { href: "/admin/r/teachings", label: "Teachings", icon: <ScrollText />, perm: ["content.manage"] },
     { href: "/admin/r/teachingTracks", label: "Teaching tracks", icon: <Layers />, perm: ["content.manage"] },
+    { href: "/admin/r/hardQuestions", label: "Hard questions", icon: <ScrollText />, perm: ["content.manage"] },
     { href: "/admin/r/materials", label: "Study materials", icon: <LibraryBig />, perm: ["courses.manage", "content.manage"] },
     { href: "/admin/branding", label: "Logo & pictures", icon: <ImageIcon />, perm: ["media.manage", "super.settings"] },
     { href: "/admin/settings", label: "Settings", icon: <Settings />, perm: ["settings.academic", "settings.admissions", "super.settings"] },

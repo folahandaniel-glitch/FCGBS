@@ -18,7 +18,7 @@ export default async function StudentHome({ searchParams }: { searchParams: Prom
   if (!lc?.primary) return (
     <div className="space-y-6">
       <div className="mb-2"><AccessCard initial={await getAccessState(sess.user.id, sess.user.userType)} contact={(await accessContact()).contact} note={(await accessContact()).note} /></div>
-      <EmptyState title="Start here: choose your free certificate programme" description="Your access code is active. Pick one certificate programme to study free of charge, and look through everything else the school offers." action={<Link className="rounded-xl bg-navy-800 px-5 py-2.5 text-sm font-bold text-white" href="/student/courses/start">Choose my free programme</Link>} />
+      <EmptyState title="Start here: open your courses" description="Your access code is active and opens every course. Open a programme, or open all courses and study in any order." action={<Link className="rounded-xl bg-navy-800 px-5 py-2.5 text-sm font-bold text-white" href="/student/courses/start">Open my courses</Link>} />
     </div>
   );
   const en = lc.primary;

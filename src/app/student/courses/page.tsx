@@ -10,9 +10,10 @@ import { dropCourseAction } from "../actions";
 export default async function CoursesPage() {
   const sess = await requireLearnerPage();
   const lc = await learnerContext(sess.user.id);
-  if (!lc?.primary) return <EmptyState title="Start here: choose your free certificate programme" description="Your access code is active. Pick one certificate programme to study free of charge, and look through everything else the school offers." action={<Link className="rounded-xl bg-navy-800 px-5 py-2.5 text-sm font-bold text-white" href="/student/courses/start">Choose my free programme</Link>} />;
+  if (!lc?.primary) return <EmptyState title="Start here: open your courses" description="Your access code is active and opens every course. Open a programme, or open all courses and study in any order." action={<Link className="rounded-xl bg-navy-800 px-5 py-2.5 text-sm font-bold text-white" href="/student/courses/start">Open my courses</Link>} />;
   const regs = await myRegistrations(lc.primary.e.id);
   const cfg = await getSetting("academic");
+  const self = await getSetting("selfService");
   const offers = lc.term && lc.primary.e.status === "ACTIVE" ? await availableOfferings(lc.primary.e.id, lc.primary.e.programmeId, lc.term.id) : [];
   const termCredits = regs.filter((r) => r.term === lc.term?.name).reduce((a, r) => a + r.credits, 0);
   const today = new Date().toISOString().slice(0, 10);
@@ -31,6 +32,12 @@ export default async function CoursesPage() {
           </tbody></Table>
         )}
       </Card>
+      {self.enabled && self.openAll && (
+        <Link href="/student/courses/start" className="mt-6 block rounded-3xl bg-gradient-to-r from-gold-500 to-amber-600 p-5 text-white shadow-card transition hover:shadow-lift">
+          <p className="text-lg font-extrabold">Your access code opens every course</p>
+          <p className="mt-1 text-sm text-white/90">Open any programme, or all courses at once, and study in any order. Open more courses →</p>
+        </Link>
+      )}
       <Card className="mt-6">
         <CardHeader title="Register for courses" description={open ? `Maximum ${cfg.maxCreditsPerSemester} credits per semester. Prerequisites are checked automatically.` : "Registration is not open for this semester."} />
         <div className="p-5">{offers.length === 0 ? <p className="text-sm text-muted">No further courses are open for your programme this semester.</p> : open ? <RegisterForm rows={offers} maxCredits={cfg.maxCreditsPerSemester} currentCredits={termCredits} /> : <p className="text-sm text-muted">Registration opens {lc.term?.registrationOpens} and closes {lc.term?.registrationCloses}.</p>}</div>

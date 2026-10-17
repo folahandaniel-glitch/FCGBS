@@ -1405,3 +1405,33 @@ export const enrolmentRequests = pgTable(
   },
   (t) => [index("enrolment_requests_user_idx").on(t.userId, t.status), index("enrolment_requests_status_idx").on(t.status, t.createdAt)],
 );
+
+/* ------------------------------------------------ hard questions (apologetics) */
+
+/** A difficult or disputed question answered through several lenses: exegetical, genealogical, archaeological, apostolic, prophetic and theological. */
+export const hardQuestions = pgTable(
+  "hard_questions",
+  {
+    id: id(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    category: text("category").notNull().default("General"),
+    summary: text("summary"),
+    exegetical: text("exegetical"),
+    genealogical: text("genealogical"),
+    archaeological: text("archaeological"),
+    apostolic: text("apostolic"),
+    prophetic: text("prophetic"),
+    theological: text("theological"),
+    views: text("views"),
+    pastoral: text("pastoral"),
+    scriptures: text("scriptures"),
+    readings: text("readings"),
+    featured: boolean("featured").notNull().default(false),
+    sort: integer("sort").notNull().default(0),
+    status: contentStatusEnum("status").notNull().default("PUBLISHED"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("hard_questions_cat_idx").on(t.category, t.sort), index("hard_questions_status_idx").on(t.status)],
+);

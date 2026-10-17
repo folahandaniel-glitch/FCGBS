@@ -6,7 +6,7 @@ import { Confirm } from "@/components/admin/row-actions";
 import { Badge } from "@/components/ui/primitives";
 import { requireLearnerPage } from "@/server/http";
 import { exploreCatalogue, myRequests, selfState } from "@/server/services/selfservice";
-import { cancelRequestAction, requestEnrolmentAction } from "../self-actions";
+import { cancelRequestAction, openAllAction, openSelectedAction, requestEnrolmentAction } from "../self-actions";
 
 export const metadata: Metadata = { title: "Programmes and courses" };
 const STATUS: Record<string, { tone: "green" | "amber" | "red" | "blue" | "neutral"; label: string }> = { PENDING: { tone: "amber", label: "Awaiting approval" }, APPROVED: { tone: "green", label: "Approved" }, REJECTED: { tone: "red", label: "Not approved" }, CANCELLED: { tone: "neutral", label: "Cancelled" } };
@@ -18,16 +18,17 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
   const progs = cat.programmes.filter((p) => !q || `${p.name} ${p.code}`.toLowerCase().includes(q));
   const courses = cat.courses.filter((c) => !q || `${c.title} ${c.code} ${c.dept ?? ""}`.toLowerCase().includes(q)).slice(0, 80);
   const pending = reqs.filter((r) => r.status === "PENDING");
+  const open = state.cfg.openAll;
   return (
     <div className="space-y-6">
       <header className="rounded-3xl bg-gradient-to-br from-violet-800 via-royal-700 to-sky-600 p-6 text-white shadow-card sm:p-8">
         <h1 className="font-display text-3xl font-bold">Programmes and courses</h1>
-        <p className="mt-2 max-w-2xl text-white/90">Look through everything the school offers. Tick what you want and send a request — you can ask for one or several. The school office approves each request.</p>
-        <p className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-white/15 px-4 py-2 text-sm font-bold"><Phone className="size-4 text-gold-300" aria-hidden /> To get approval, contact the admin on <span className="text-gold-300">{state.cfg.approvalContact}</span></p>
+        <p className="mt-2 max-w-2xl text-white/90">{open ? "Look through everything the school offers. Your access code opens it all: tick what you want and open it now, or open every course at once." : "Look through everything the school offers. Tick what you want and send a request — you can ask for one or several. The school office approves each request."}</p>
+        {open ? <div className="mt-4"><Confirm label="Open ALL courses" variant="primary" confirmVariant="primary" confirmLabel="Open everything" title="Open every course?" description="All published courses are added to My courses for this semester. You can study in any order." run={async () => { "use server"; return openAllAction(); }} /></div> : <p className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-white/15 px-4 py-2 text-sm font-bold"><Phone className="size-4 text-gold-300" aria-hidden /> To get approval, contact the admin on <span className="text-gold-300">{state.cfg.approvalContact}</span></p>}
         <form className="mt-4 flex max-w-md gap-2" role="search"><input name="q" defaultValue={q} placeholder="Search programmes and courses" aria-label="Search" className="min-w-0 flex-1 rounded-xl border-0 px-4 py-2.5 text-ink" /><button className="rounded-xl bg-gold-500 px-4 text-sm font-bold text-navy-900">Search</button></form>
       </header>
 
-      {state.freeLeft > 0 && <p className="rounded-2xl bg-gold-50 p-4 text-sm ring-1 ring-gold-400/40">You have not chosen your free certificate programme yet. <Link href="/student/courses/start" className="font-bold text-royal-700 underline">Choose it now</Link> — no approval needed.</p>}
+      {!open && state.freeLeft > 0 && <p className="rounded-2xl bg-gold-50 p-4 text-sm ring-1 ring-gold-400/40">You have not chosen your free certificate programme yet. <Link href="/student/courses/start" className="font-bold text-royal-700 underline">Choose it now</Link> — no approval needed.</p>}
 
       {reqs.length > 0 && (
         <section className="rounded-3xl bg-white p-5 shadow-card ring-1 ring-line" aria-label="My requests">
@@ -47,7 +48,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
         </section>
       )}
 
-      <ActionForm action={requestEnrolmentAction} resetOnSuccess className="space-y-6">
+      <ActionForm action={open ? openSelectedAction : requestEnrolmentAction} resetOnSuccess className="space-y-6">
         <section aria-label="Programmes">
           <h2 className="mb-3 font-display text-2xl font-bold text-navy-800">Programmes</h2>
           <div className="grid gap-3 md:grid-cols-2">
@@ -55,9 +56,9 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
               const st = p.request ? STATUS[p.request] : null;
               return (
                 <label key={p.id} className={`flex gap-3 rounded-2xl bg-white p-4 shadow-card ring-1 ${p.mine ? "ring-emerald-300" : "ring-line"} ${p.mine || p.request === "PENDING" ? "opacity-80" : "cursor-pointer hover:ring-royal-400"}`}>
-                  <input type="checkbox" name="programmeIds" value={p.id} disabled={p.mine || p.request === "PENDING"} className="mt-1 size-5 accent-royal-600" aria-label={`Request ${p.name}`} />
+                  <input type="checkbox" name="programmeIds" value={p.id} disabled={p.mine || p.request === "PENDING"} className="mt-1 size-5 accent-royal-600" aria-label={`${open ? "Open" : "Request"} ${p.name}`} />
                   <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-2"><span className="font-bold text-navy-800">{p.name}</span><Badge tone="blue">{p.level}</Badge>{p.mine && <Badge tone="green">You are enrolled</Badge>}{st && !p.mine && <Badge tone={st.tone}>{st.label}</Badge>}</span>
+                    <span className="flex flex-wrap items-center gap-2"><span className="font-bold text-navy-800">{p.name}</span><Badge tone="blue">{p.level}</Badge>{p.mine && <Badge tone="green">Open</Badge>}{st && !p.mine && <Badge tone={st.tone}>{st.label}</Badge>}</span>
                     <span className="mt-1 line-clamp-3 block text-sm text-ink/75">{p.description}</span>
                     <span className="mt-1 block text-xs font-semibold text-muted">{p.months} months · {p.credits} credit units</span>
                   </span>
@@ -88,8 +89,8 @@ export default async function ExplorePage({ searchParams }: { searchParams: Prom
         </section>
 
         <div className="sticky bottom-3 z-10 rounded-2xl bg-white/95 p-4 shadow-lift ring-1 ring-line backdrop-blur">
-          <TextAreaField label="Note to the admin (optional)" name="note" rows={2} />
-          <div className="mt-3 flex flex-wrap items-center gap-3"><SubmitButton pendingText="Sending…">Request the selected</SubmitButton><span className="text-xs text-muted">After sending, contact the school on {state.cfg.approvalContact} for approval.</span></div>
+          {!open && <TextAreaField label="Note to the admin (optional)" name="note" rows={2} />}
+          <div className="mt-3 flex flex-wrap items-center gap-3"><SubmitButton pendingText={open ? "Opening…" : "Sending…"}>{open ? "Open the selected" : "Request the selected"}</SubmitButton>{!open && <span className="text-xs text-muted">After sending, contact the school on {state.cfg.approvalContact} for approval.</span>}</div>
         </div>
       </ActionForm>
     </div>
