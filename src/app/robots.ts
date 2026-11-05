@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { AI_CRAWLERS, siteBaseUrl } from "@/lib/seo-kit";
 
 export default function robots(): MetadataRoute.Robots {
-  const base = process.env.APP_URL ?? "http://localhost:3000";
-  return { rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/student", "/teach", "/apply", "/backend", "/api", "/login"] }], sitemap: `${base}/sitemap.xml` };
+  const base = siteBaseUrl();
+  return { rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/student", "/teach", "/apply", "/backend", "/api", "/login"] }, { ...{ userAgent: "*", allow: "/", disallow: ["/admin", "/student", "/teach", "/apply", "/backend", "/api", "/login"] }, userAgent: AI_CRAWLERS }], sitemap: `${base}/sitemap.xml` };
 }

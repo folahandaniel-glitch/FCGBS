@@ -6,6 +6,7 @@ import { BrandLockup, Logo } from "../brand";
 import { buttonClass } from "../ui/primitives";
 import { MobileNav } from "./mobile-nav";
 
+import { FodanCredit } from "@/components/fodan-credit";
 export async function SiteHeader() {
   const [brand, nav] = await Promise.all([getBrand(), getContent("nav")]);
   const base = [...nav.items];
@@ -91,9 +92,10 @@ export async function SiteFooter() {
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-1 px-4 py-5 text-center text-xs text-white/60 sm:px-6">
           <p>© {year} {brand.name}. {brand.parentMinistry}.</p>
           <p>Institutional programmes — no external accreditation is claimed unless published by the institution.</p>
-          {brand.site.showPoweredBy && brand.site.poweredBy && <p className="font-medium text-white/80">{brand.site.poweredBy}</p>}
+          {brand.site.showPoweredBy && brand.site.poweredBy && !/fodan softnet/i.test(brand.site.poweredBy) && <p className="font-medium text-white/80">{brand.site.poweredBy}</p>}
         </div>
       </div>
+      <FodanCredit />
     </footer>
   );
 }

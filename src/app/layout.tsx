@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { ServiceWorker } from "@/components/service-worker";
 import { getBrand } from "@/server/brand";
 
+import { organizationJsonLd } from "@/lib/seo-kit";
 // One display face, one weight: the only web font downloaded. Body text uses the device's own font (fast, no data).
 const display = Playfair_Display({ subsets: ["latin"], weight: ["700"], variable: "--font-display-face", display: "swap", preload: false });
 
@@ -30,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={display.variable}>
       <body className="min-h-dvh">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }} />
         <a href="#main" className="skip-link">Skip to main content</a>
         <ToastProvider>{children}</ToastProvider>
         <ServiceWorker />
