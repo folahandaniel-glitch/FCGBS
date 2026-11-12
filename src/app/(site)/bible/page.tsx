@@ -3,8 +3,9 @@ import Link from "next/link";
 import { BOOKS } from "@/core/bible";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
 import { verseOfTheDay } from "@/server/services/bible";
+import { getContent, seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Bible, Concordance, Hebrew & Greek", description: "Read the Bible free in the KJV, BSB, ASV, Hebrew and Greek. Tap any KJV word to see its Strong's Hebrew or Greek source, search the concordance and study by topic." };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("bible"); }
 
 const TOOLS = [
   { href: "/bible/search", t: "Concordance", d: "Find every verse that uses a word or phrase, with counts by book.", c: "from-sky-500 to-royal-700" },
@@ -15,15 +16,16 @@ const TOOLS = [
   { href: "/bible/notes", t: "My notes & highlights", d: "Private notes, colour highlights and bookmarks (sign in).", c: "from-navy-700 to-navy-900" },
 ];
 
-export default function BibleHome() {
+export default async function BibleHome() {
+  const hero = (await getContent("pageHeroes")).bible;
   const v = verseOfTheDay();
   const book = BOOKS[v.book];
   const groups = [...new Set(BOOKS.map((b) => b.group))];
   return (
     <>
-      <BibleBanner eyebrow="Study the Word" title="Bible, Concordance & Original Languages">
+      <BibleBanner eyebrow={hero.kicker} title={hero.title}>
         <form action="/bible/go" className="mt-4 flex max-w-xl gap-2" role="search">
-          <input name="q" placeholder="John 3:16, Psalm 23, or a word such as “grace”" aria-label="Find a passage or word" className="min-w-0 flex-1 rounded-xl border-0 px-4 py-3 text-ink shadow-lift" />
+          <input name="q" placeholder={hero.searchPlaceholder} aria-label="Find a passage or word" className="min-w-0 flex-1 rounded-xl border-0 px-4 py-3 text-ink shadow-lift" />
           <button className="rounded-xl bg-gold-500 px-5 py-3 text-sm font-bold text-navy-900 shadow-lift hover:bg-gold-400">Go</button>
         </form>
       </BibleBanner>

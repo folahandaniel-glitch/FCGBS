@@ -2,18 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { COLOUR } from "@/components/bible/colours";
 import { TeachingBanner, TeachingCard, iconFor } from "@/components/teachings/ui";
+import { getContent } from "@/server/services/content";
 import { latestTeachings, listTeachings, listTracks } from "@/server/services/teachings";
+import { seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Teachings — Apostolic, Pastoral, Evangelical, Prophetic, Revival", description: "Free, original, Scripture-based teachings on apostolic, pastoral, evangelical and prophetic ministry, revival and reformation, Kingdom enterprise and foundations of faith. Download as Word, PowerPoint or PDF." };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("teachings"); }
 
 export default async function TeachingsHome({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const hero = (await getContent("pageHeroes")).teachings;
   const q = ((await searchParams).q ?? "").slice(0, 60).trim();
   const [tracks, found, latest] = await Promise.all([listTracks(), q ? listTeachings({ q, limit: 40 }) : Promise.resolve([]), q ? Promise.resolve([]) : latestTeachings(6)]);
   return (
     <>
-      <TeachingBanner eyebrow="Teaching library" title="Teachings that build the Church" colour="royal" icon="book">
-        <p>Original, Scripture-centred teachings for pastors, teachers, evangelists, prophets, apostles and every believer — free to read, listen to and download for your church or class.</p>
-        <form className="mt-5 flex max-w-xl gap-2" role="search"><input name="q" defaultValue={q} placeholder="Search teachings, e.g. revival, shepherd, giving" aria-label="Search teachings" className="min-w-0 flex-1 rounded-xl border-0 px-4 py-3 text-ink shadow-lift" /><button className="rounded-xl bg-gold-500 px-5 py-3 text-sm font-bold text-navy-900 shadow-lift hover:bg-gold-400">Search</button></form>
+      <TeachingBanner eyebrow={hero.kicker} title={hero.title} colour="royal" icon="book">
+        <p>{hero.intro}</p>
+        <form className="mt-5 flex max-w-xl gap-2" role="search"><input name="q" defaultValue={q} placeholder={hero.searchPlaceholder} aria-label="Search teachings" className="min-w-0 flex-1 rounded-xl border-0 px-4 py-3 text-ink shadow-lift" /><button className="rounded-xl bg-gold-500 px-5 py-3 text-sm font-bold text-navy-900 shadow-lift hover:bg-gold-400">Search</button></form>
       </TeachingBanner>
       <div className="mx-auto max-w-6xl space-y-12 px-4 py-10 sm:px-6">
         {q ? (

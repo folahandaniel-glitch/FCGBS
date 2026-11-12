@@ -8,7 +8,15 @@ import { ButtonLink } from "@/components/ui/primitives";
 import { Logo } from "@/components/brand";
 import { getBrand } from "@/server/brand";
 import { carouselPosts, listProgrammes } from "@/server/services/catalog";
+import type { Metadata } from "next";
 import { getContent } from "@/server/services/content";
+
+/** Optional SEO override for the homepage (Admin > Website content > Search-engine titles); empty keeps the brand default. */
+export async function generateMetadata(): Promise<Metadata> {
+  const s = (await getContent("seo")).home;
+  const title = s.title.trim(), description = s.description.trim();
+  return { ...(title ? { title: { absolute: title } } : {}), ...(description ? { description } : {}) };
+}
 
 const img = (id: string) => (id ? `/api/v1/assets/${id}` : null);
 

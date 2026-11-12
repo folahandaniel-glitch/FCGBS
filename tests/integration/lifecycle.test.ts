@@ -36,6 +36,8 @@ beforeAll(async () => {
   const f = await freshDb();
   close = f.close;
   await seedStructure(f.db);
+  // The seed derives the registration window from today's date (closes 31 Oct); keep it open so these tests do not depend on the calendar.
+  await f.db.update(s.academicTerms).set({ registrationOpens: "2000-01-01", registrationCloses: "2999-12-31" });
   admissions = await mkUser("adm@t.com", "STAFF", "chancellor", "Adm");
   registrar = await mkUser("reg@t.com", "STAFF", "registrar", "Reg");
   lecturer = await mkUser("lec@t.com", "STAFF", "lecturer", "Lec");

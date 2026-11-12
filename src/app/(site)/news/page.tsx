@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero, Section } from "@/components/site/blocks";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { listPosts } from "@/server/services/catalog";
 
-export const metadata: Metadata = { title: "News & Events" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("news"); }
 
 const fmt = (d: Date | null) => (d ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "");
 

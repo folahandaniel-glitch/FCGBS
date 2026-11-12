@@ -3,16 +3,17 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { Hero, Section } from "@/components/site/blocks";
 import { ActionForm, SubmitButton, TextAreaField, TextField } from "@/components/ui/form";
 import { getBrand } from "@/server/brand";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { contactAction } from "./actions";
 
-export const metadata: Metadata = { title: "Contact" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("contact"); }
 
 export default async function ContactPage() {
+  const hero = (await getContent("pageHeroes")).contact;
   const [b, c] = await Promise.all([getBrand(), getContent("contact")]);
   return (
     <>
-      <Hero eyebrow="Get in touch" title={c.title}>{c.intro}</Hero>
+      <Hero eyebrow={hero.kicker} title={c.title}>{c.intro}</Hero>
       <Section tone="white">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
           <div className="space-y-4 text-sm">

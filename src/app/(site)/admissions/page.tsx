@@ -3,15 +3,16 @@ import { Alert, ButtonLink } from "@/components/ui/primitives";
 import { Checklist, Hero, Section } from "@/components/site/blocks";
 import { ADMISSION_BY_LEVEL } from "@/content/programmes";
 import { getSetting } from "@/server/settings";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Admissions & How to Apply" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("admissions"); }
 
 export default async function AdmissionsPage() {
+  const hero = (await getContent("pageHeroes")).admissions;
   const [a, cfg] = await Promise.all([getContent("admissionsPage"), getSetting("admissions")]);
   return (
     <>
-      <Hero eyebrow="Join FCGBS" title={a.title}>{a.intro}</Hero>
+      <Hero eyebrow={hero.kicker} title={a.title}>{a.intro}</Hero>
       <Section title="How to apply" tone="white">
         <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {a.steps.map((s, i) => (

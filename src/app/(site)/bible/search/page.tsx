@@ -3,8 +3,9 @@ import Link from "next/link";
 import { BOOKS, isTranslation, TRANSLATIONS, type TranslationId } from "@/core/bible";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
 import { concordance, parseQuery } from "@/server/services/bible";
+import { seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Bible Concordance", description: "Search every verse of the Bible by word or phrase." };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("bibleSearch"); }
 const PAGE = 40;
 
 const hi = (text: string, q: string) => {

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Hero, Section } from "@/components/site/blocks";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { Markdown } from "@/components/markdown";
 import { getPolicy } from "@/server/services/catalog";
 
-export const metadata: Metadata = { title: "Statement of Faith" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("statementOfFaith"); }
 
 export default async function FaithPage() {
   const h = (await getContent("pageHeadings")).statementOfFaith;

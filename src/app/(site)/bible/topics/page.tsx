@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { COLOUR } from "@/components/bible/colours";
 
-export const metadata: Metadata = { title: "Bible Topics", description: "Topical Bible study: salvation, prayer, the Holy Spirit, revival, apostolic and prophetic ministry, stewardship and more." };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("bibleTopics"); }
 
 export default async function TopicsPage() {
   const c = await getContent("bibleTopics");

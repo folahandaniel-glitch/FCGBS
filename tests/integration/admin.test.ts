@@ -7,7 +7,7 @@ import * as s from "@/server/db/schema";
 import { hashPassword } from "@/server/auth/password";
 import { loadPermissions } from "@/server/auth/session";
 import type { Actor } from "@/server/audit";
-import { getContent, putContent, restoreContentVersion, contentHistory } from "@/server/services/content";
+import { getContent, putContent, restoreContentVersion, contentHistory, seoMetadata } from "@/server/services/content";
 import { RESOURCES, saveResource } from "@/server/admin-resources";
 import { createStaff, setUserRoles } from "@/server/services/people";
 import { publishPolicy, savePolicyDraft } from "@/server/services/ops";
@@ -113,4 +113,28 @@ it("footer, header buttons and page headings are editable, default to the origin
   expect((await getContent("pageHeadings")).faculty.title).toBe("Our Lecturers");
   // a person without content.manage cannot be the actor of an edit through the UI gate: ICT has no content permission
   expect(ict.permissions.has("content.manage")).toBe(false);
+});
+
+it("page hero text and SEO titles are editable, default to the original wording, are audited and restorable", async () => {
+  const hero0 = await getContent("pageHeroes");
+  expect(hero0.questions.title).toBe("Hard Questions");
+  expect(hero0.verify.title).toBe("VERIFY FCGBS CERTIFICATE");
+  const seo0 = await getContent("seo");
+  expect(seo0.faq.title).toBe("FAQs");
+  expect(seo0.bible.description).toMatch(/KJV/);
+  expect((await seoMetadata("faq")).title).toBe("FAQs");
+  expect((await seoMetadata("faq")).description).toBeUndefined();
+  await putContent(comms, "seo", { ...seo0, faq: { title: "Questions answered", description: "Help for applicants." } } as never, ctx);
+  const m = await seoMetadata("faq");
+  expect(m.title).toBe("Questions answered");
+  expect(m.description).toBe("Help for applicants.");
+  await putContent(comms, "seo", { ...seo0, faq: { title: "  ", description: "" } } as never, ctx); // blank title falls back
+  expect((await seoMetadata("faq")).title).toBe("FAQs");
+  await putContent(comms, "pageHeroes", { ...hero0, questions: { ...hero0.questions, title: "Honest Questions" } } as never, ctx);
+  expect((await getContent("pageHeroes")).questions.title).toBe("Honest Questions");
+  expect((await getContent("pageHeroes")).teachings.kicker).toBe("Teaching library");
+  const hist = await contentHistory("pageHeroes");
+  await restoreContentVersion(comms, "pageHeroes", hist[hist.length - 1].version, ctx);
+  const [a] = await getDb().select().from(s.auditLogs).where(eq(s.auditLogs.entityId, "seo")).limit(1);
+  expect(a?.action).toBe("content.updated");
 });

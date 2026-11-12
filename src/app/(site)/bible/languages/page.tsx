@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { resolveRef, strongsEntry } from "@/server/services/bible";
 
-export const metadata: Metadata = { title: "Learn Biblical Hebrew & Greek", description: "Hebrew and Greek alphabets, pronunciation and word studies for ministers, with links to the lexicon and the verses." };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("bibleLanguages"); }
 
 const FOCUS: Record<string, { label: string; chip: string }> = {
   ALL: { label: "All", chip: "bg-navy-800 text-white" },

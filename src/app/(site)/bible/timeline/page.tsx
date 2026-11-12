@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
 import { COLOUR } from "@/components/bible/colours";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { resolveRef } from "@/server/services/bible";
 import { getSession } from "@/server/http";
 import { MaterialList } from "@/components/teachings/materials";
 import { materialsByPrefix } from "@/server/services/attachments";
 
-export const metadata: Metadata = { title: "Bible Timeline", description: "A Genesis-to-Revelation timeline with theological explanation and graded archaeological evidence." };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("bibleTimeline"); }
 
 const LEVEL: Record<string, { label: string; cls: string }> = {
   strong: { label: "Strong", cls: "bg-emerald-100 text-emerald-800" },

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Checklist, Hero, InfoCard, Section } from "@/components/site/blocks";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Vision, Mission & Values" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("visionMission"); }
 
 export default async function VisionPage() {
   const h = (await getContent("pageHeadings")).visionMission;

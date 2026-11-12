@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Hero, Section } from "@/components/site/blocks";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { listPosts } from "@/server/services/catalog";
 
-export const metadata: Metadata = { title: "FAQs" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("faq"); }
 
 export default async function FaqPage() {
   const h = (await getContent("pageHeadings")).faq;

@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { Hero, Section } from "@/components/site/blocks";
 import { inputClass } from "@/components/ui/primitives";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { listLibrary } from "@/server/services/catalog";
 
-export const metadata: Metadata = { title: "Digital Library" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("library"); }
 
 export default async function LibraryPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const hero = (await getContent("pageHeroes")).library;
   const { q } = await searchParams;
   const [c, items] = await Promise.all([getContent("library"), listLibrary({ q: q?.slice(0, 60), publicOnly: true })]);
   const groups = [...new Set(items.map((i) => i.category))];
   return (
     <>
-      <Hero eyebrow="Resources" title={c.title}>{c.intro}</Hero>
+      <Hero eyebrow={hero.kicker} title={c.title}>{c.intro}</Hero>
       <Section tone="white">
         <form role="search" className="mb-6 flex max-w-xl gap-3"><input name="q" defaultValue={q} placeholder="Search the library…" aria-label="Search the library" className={inputClass} /><button className="h-11 rounded-xl bg-navy-800 px-5 text-sm font-semibold text-white">Search</button></form>
         {items.length === 0 ? <p className="text-muted">No public resources are listed yet. Enrolled students can sign in to access the full library.</p> : groups.map((g) => (

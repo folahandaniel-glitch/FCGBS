@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
 import { searchStrongs, strongsEntry } from "@/server/services/bible";
+import { seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Hebrew & Greek Lexicon (Strong's)", description: "Search Strong's Hebrew and Greek dictionary by number, original word, transliteration or English meaning." };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("bibleStrongs"); }
 
 const FEATURED: [string, string][] = [["G26", "agape · love"], ["G3056", "logos · word"], ["G4151", "pneuma · spirit"], ["G1577", "ekklesia · church"], ["G5485", "charis · grace"], ["G4102", "pistis · faith"], ["G1411", "dunamis · power"], ["G2222", "zoe · life"], ["H7965", "shalom · peace"], ["H2617", "hesed · mercy"], ["H7307", "ruach · spirit"], ["H3519", "kabod · glory"], ["H430", "Elohim · God"], ["H3068", "YHWH · the LORD"], ["H6944", "qodesh · holy"], ["H539", "aman · believe"]];
 

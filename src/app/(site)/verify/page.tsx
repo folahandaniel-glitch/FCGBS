@@ -3,13 +3,14 @@ import { Hero, Section } from "@/components/site/blocks";
 import { VerifyResult } from "@/components/site/verify-result";
 import { inputClass } from "@/components/ui/primitives";
 import { reqCtx } from "@/server/http";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 import { verifyDocument } from "@/server/services/verify";
 import { toPublicError } from "@/server/errors";
 
-export const metadata: Metadata = { title: "Verify a Certificate", robots: { index: true } };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("verify", { robots: { index: true } }); }
 
 export default async function VerifyPage({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
+  const hero = (await getContent("pageHeroes")).verify;
   const [{ code }, c] = await Promise.all([searchParams, getContent("verify")]);
   let result = null;
   let error: string | null = null;
@@ -18,7 +19,7 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
   }
   return (
     <>
-      <Hero eyebrow="Public verification" title="VERIFY FCGBS CERTIFICATE">{c.intro}</Hero>
+      <Hero eyebrow={hero.kicker} title={hero.title}>{c.intro}</Hero>
       <Section tone="white">
         <form className="flex max-w-xl flex-col gap-3 sm:flex-row" role="search">
           <label htmlFor="code" className="sr-only">Certificate number</label>

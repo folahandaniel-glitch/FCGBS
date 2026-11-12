@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { desc, eq } from "drizzle-orm";
 import { cache } from "react";
 import { CONTENT_DEFAULTS, type ContentKey } from "@/content/defaults";
@@ -67,4 +68,15 @@ export async function restoreContentVersion(actor: Actor, key: ContentKey, versi
 
 export async function resetContent(actor: Actor, key: ContentKey, ctx: ReqCtx) {
   return putContent(actor, key, CONTENT_DEFAULTS[key] as unknown as Json, ctx);
+}
+
+export type SeoKey = keyof (typeof CONTENT_DEFAULTS)["seo"];
+
+/** Page title/description from Admin > Website content > Search-engine titles. Empty title falls back to the original wording; empty description is omitted. */
+export async function seoMetadata(key: SeoKey, extra: Metadata = {}): Promise<Metadata> {
+  const s = (await getContent("seo"))[key];
+  const d = CONTENT_DEFAULTS.seo[key];
+  const title = s?.title?.trim() || d.title;
+  const description = s?.description?.trim() || undefined;
+  return { ...extra, title, ...(description ? { description } : {}) };
 }

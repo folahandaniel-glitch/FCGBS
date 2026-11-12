@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BibleBanner, BibleTabs } from "@/components/bible/ui";
 import { COLOUR } from "@/components/bible/colours";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Bible Reading Plans" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("biblePlans"); }
 
 export default async function PlansPage() {
   const c = await getContent("biblePlans");

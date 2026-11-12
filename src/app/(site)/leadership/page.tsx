@@ -2,15 +2,16 @@
 import type { Metadata } from "next";
 import { Hero, Prose, Section } from "@/components/site/blocks";
 import { getBrand } from "@/server/brand";
-import { getContent } from "@/server/services/content";
+import { getContent, seoMetadata } from "@/server/services/content";
 
-export const metadata: Metadata = { title: "Founder & Leadership" };
+export async function generateMetadata(): Promise<Metadata> { return seoMetadata("leadership"); }
 
 export default async function LeadershipPage() {
+  const hero = (await getContent("pageHeroes")).leadership;
   const [brand, f, l] = await Promise.all([getBrand(), getContent("founder"), getContent("leadership")]);
   return (
     <>
-      <Hero eyebrow="Founder & President" title={f.name} />
+      <Hero eyebrow={hero.kicker} title={f.name} />
       <Section tone="white">
         <div className="grid gap-8 md:grid-cols-[auto_1fr]">
           <div className="mx-auto flex gap-3 md:flex-col">
