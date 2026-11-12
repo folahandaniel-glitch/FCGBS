@@ -22,6 +22,9 @@ export interface Slide {
 
 export const CONTENT_DEFAULTS = {
   nav: {
+    signInLabel: "Sign in",
+    applyLabel: "Apply now",
+    applyHref: "/apply",
     items: [
       { label: "About", href: "/about" },
       { label: "Programmes", href: "/programmes" },
@@ -33,6 +36,40 @@ export const CONTENT_DEFAULTS = {
       { label: "Library", href: "/library" },
       { label: "News & Events", href: "/news" },
     ] as { label: string; href: string }[],
+  },
+
+  footer: {
+    studyTitle: "Study",
+    studyLinks: [
+      { label: "Programmes", href: "/programmes" }, { label: "Courses", href: "/courses" }, { label: "Bible, Concordance, Hebrew & Greek", href: "/bible" },
+      { label: "Teaching Library", href: "/teachings" }, { label: "Hard Questions", href: "/questions" }, { label: "Bible Timeline", href: "/bible/timeline" },
+      { label: "Enter access code", href: "/access" }, { label: "Departments", href: "/departments" }, { label: "Fivefold Ministry", href: "/fivefold-ministry" },
+      { label: "Ministry Formation", href: "/ministry-formation" }, { label: "Technology Hub", href: "/technology-hub" }, { label: "Kingdom Enterprise", href: "/kingdom-enterprise" },
+    ] as { label: string; href: string }[],
+    schoolTitle: "School",
+    schoolLinks: [
+      { label: "About FCGBS", href: "/about" }, { label: "Vision & Mission", href: "/vision-mission" }, { label: "Statement of Faith", href: "/statement-of-faith" },
+      { label: "Founder & Leadership", href: "/leadership" }, { label: "Faculty", href: "/faculty" }, { label: "Admissions", href: "/admissions" },
+      { label: "Library", href: "/library" }, { label: "News & Events", href: "/news" }, { label: "Verify a Certificate", href: "/verify" },
+    ] as { label: string; href: string }[],
+    contactTitle: "Contact",
+    legalLinks: [
+      { label: "Privacy", href: "/policies/privacy" }, { label: "Terms", href: "/policies/terms" }, { label: "FAQs", href: "/faq" }, { label: "Contact", href: "/contact" },
+    ] as { label: string; href: string }[],
+    studentLoginLabel: "Student Login",
+    adminLoginLabel: "Faculty / Admin Login",
+    disclaimer: "Institutional programmes — no external accreditation is claimed unless published by the institution.",
+  },
+
+  pageHeadings: {
+    courses: { kicker: "Course catalogue", title: "Courses", intro: "Search by title, code or department. Every course has objectives, outcomes, a syllabus, recommended reading and assessment details." },
+    departments: { kicker: "Academic structure", title: "Departments", intro: "" },
+    faculty: { kicker: "Teaching staff", title: "Faculty", intro: "Faculty profiles are published here only after the institution confirms the appointment and the person agrees to a public profile.", empty: "Faculty profiles will be published here as appointments are confirmed." },
+    faq: { kicker: "Answers", title: "Frequently asked questions", intro: "" },
+    news: { kicker: "Stay informed", title: "News & Events", intro: "", announcementsTitle: "Announcements", newsTitle: "News" },
+    programmes: { kicker: "Programme catalogue", title: "Certificate → Diploma → Advanced Diploma", intro: "Each level builds on the one before. Programmes are institutional theological education programmes; new programmes can be added as the school grows." },
+    statementOfFaith: { kicker: "What we believe", title: "Statement of Faith", intro: "" },
+    visionMission: { kicker: "Who we are", title: "Vision, Mission & Core Values", intro: "" },
   },
 
   carousel: {
@@ -299,7 +336,9 @@ export const CONTENT_DEFAULTS = {
 export type ContentKey = keyof typeof CONTENT_DEFAULTS;
 
 export const CONTENT_LABELS: Record<ContentKey, { label: string; group: string; help: string }> = {
-  nav: { label: "Main menu", group: "Site-wide", help: "Public navigation links." },
+  nav: { label: "Main menu & header buttons", group: "Site-wide", help: "Public navigation links and the Sign in / Apply now buttons." },
+  footer: { label: "Footer", group: "Site-wide", help: "Footer link columns, legal links, login buttons and the disclaimer line." },
+  pageHeadings: { label: "Page headings", group: "Pages", help: "The small heading, title and introduction at the top of Courses, Departments, Faculty, FAQs, News, Programmes, Statement of Faith and Vision & Mission." },
   carousel: { label: "Homepage carousel (announcements)", group: "Homepage", help: "Animated slides at the top of the homepage. Add announcements, events, images and links." },
   home: { label: "Homepage text", group: "Homepage", help: "Hero, audience, features and call-to-action text." },
   about: { label: "About FCGBS", group: "Institution", help: "About page and relationship with Fodan Gospel Outreach." },

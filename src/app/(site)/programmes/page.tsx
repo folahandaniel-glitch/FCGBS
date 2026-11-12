@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero, Section } from "@/components/site/blocks";
+import { getContent } from "@/server/services/content";
 import { listProgrammes } from "@/server/services/catalog";
 
 export const metadata: Metadata = { title: "Academic Programmes" };
 
 export default async function ProgrammesPage() {
+  const h = (await getContent("pageHeadings")).programmes;
   const all = await listProgrammes();
   const levels = [...new Map(all.map((p) => [p.levelKey, { name: p.level, rank: p.levelRank }])).entries()].sort((a, b) => a[1].rank - b[1].rank);
   return (
     <>
-      <Hero eyebrow="Programme catalogue" title="Certificate → Diploma → Advanced Diploma">
-        Each level builds on the one before. Programmes are institutional theological education programmes; new programmes can be added as the school grows.
-      </Hero>
+      <Hero eyebrow={h.kicker} title={h.title}>{h.intro}</Hero>
       {levels.map(([key, lv], i) => (
         <Section key={key} title={`Level ${lv.rank} · ${lv.name}`} tone={i % 2 ? "plain" : "white"}>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

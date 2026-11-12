@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero, Section } from "@/components/site/blocks";
+import { getContent } from "@/server/services/content";
 import { inputClass } from "@/components/ui/primitives";
 import { listCourses, listDepartments } from "@/server/services/catalog";
 
@@ -8,10 +9,11 @@ export const metadata: Metadata = { title: "Courses" };
 
 export default async function CoursesPage({ searchParams }: { searchParams: Promise<{ q?: string; dept?: string; level?: string }> }) {
   const sp = await searchParams;
+  const h = (await getContent("pageHeadings")).courses;
   const [courses, depts] = await Promise.all([listCourses({ q: sp.q?.slice(0, 60), dept: sp.dept, level: sp.level ? Number(sp.level) : undefined }), listDepartments()]);
   return (
     <>
-      <Hero eyebrow="Course catalogue" title="Courses">Search by title, code or department. Every course has objectives, outcomes, a syllabus, recommended reading and assessment details.</Hero>
+      <Hero eyebrow={h.kicker} title={h.title}>{h.intro}</Hero>
       <Section tone="white">
         <form className="mb-6 grid gap-3 sm:grid-cols-[1fr_14rem_9rem_auto]" role="search">
           <input name="q" defaultValue={sp.q} placeholder="Search courses…" aria-label="Search courses" className={inputClass} />

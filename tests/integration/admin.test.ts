@@ -96,3 +96,21 @@ it("global search respects permissions; CSV export neutralises formulas", async 
   expect(forIct.every((h) => ["Programme", "Course"].includes(h.kind))).toBe(true);
   expect(toCsv(["a"], [{ a: "=HYPERLINK(\"x\")" }])).toContain("'=HYPERLINK");
 });
+
+it("footer, header buttons and page headings are editable, default to the original wording, and merge new fields", async () => {
+  const f0 = await getContent("footer");
+  expect(f0.studyLinks.length).toBeGreaterThan(5);
+  expect(f0.disclaimer).toMatch(/no external accreditation/);
+  expect((await getContent("nav")).applyLabel).toBe("Apply now");
+  const h0 = await getContent("pageHeadings");
+  expect(h0.courses.title).toBe("Courses");
+  await putContent(comms, "footer", { ...f0, studyTitle: "Learn", studyLinks: [{ label: "Only link", href: "/courses" }] } as never, ctx);
+  const f1 = await getContent("footer");
+  expect(f1.studyTitle).toBe("Learn");
+  expect(f1.studyLinks).toHaveLength(1);
+  expect(f1.schoolTitle).toBe("School"); // untouched fields keep defaults
+  await putContent(comms, "pageHeadings", { ...h0, faculty: { ...h0.faculty, title: "Our Lecturers" } } as never, ctx);
+  expect((await getContent("pageHeadings")).faculty.title).toBe("Our Lecturers");
+  // a person without content.manage cannot be the actor of an edit through the UI gate: ICT has no content permission
+  expect(ict.permissions.has("content.manage")).toBe(false);
+});

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero, Section } from "@/components/site/blocks";
+import { getContent } from "@/server/services/content";
 import { listDepartments } from "@/server/services/catalog";
 
 export const metadata: Metadata = { title: "Departments" };
 
 export default async function DepartmentsPage() {
+  const h = (await getContent("pageHeadings")).departments;
   const depts = await listDepartments();
   return (
     <>
-      <Hero eyebrow="Academic structure" title="Departments" />
+      <Hero eyebrow={h.kicker} title={h.title}>{h.intro}</Hero>
       <Section tone="white">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {depts.map((d) => (

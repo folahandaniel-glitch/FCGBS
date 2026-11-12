@@ -5,10 +5,11 @@ import { getContent } from "@/server/services/content";
 export const metadata: Metadata = { title: "Vision, Mission & Values" };
 
 export default async function VisionPage() {
+  const h = (await getContent("pageHeadings")).visionMission;
   const i = await getContent("identity");
   return (
     <>
-      <Hero eyebrow="Who we are" title="Vision, Mission & Core Values" />
+      <Hero eyebrow={h.kicker} title={h.title}>{h.intro}</Hero>
       <Section title="Our vision" tone="white"><p className="max-w-3xl text-lg leading-relaxed text-ink/90">{i.vision}</p></Section>
       <Section title="Our mission" subtitle="FCGBS exists to:"><Checklist items={i.mission} /></Section>
       <Section title="Core values" tone="white">

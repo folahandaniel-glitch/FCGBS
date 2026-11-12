@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { Hero, Section } from "@/components/site/blocks";
+import { getContent } from "@/server/services/content";
 import { publicFaculty } from "@/server/services/catalog";
 
 export const metadata: Metadata = { title: "Faculty" };
 
 export default async function FacultyPage() {
+  const h = (await getContent("pageHeadings")).faculty;
   const list = await publicFaculty();
   return (
     <>
-      <Hero eyebrow="Teaching staff" title="Faculty">Faculty profiles are published here only after the institution confirms the appointment and the person agrees to a public profile.</Hero>
+      <Hero eyebrow={h.kicker} title={h.title}>{h.intro}</Hero>
       <Section tone="white">
-        {list.length === 0 ? <p className="text-muted">Faculty profiles will be published here as appointments are confirmed.</p> : (
+        {list.length === 0 ? <p className="text-muted">{h.empty}</p> : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((f, i) => (
               <div key={i} className="rounded-2xl border border-line bg-white p-5 shadow-card">

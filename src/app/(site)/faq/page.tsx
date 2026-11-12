@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { Hero, Section } from "@/components/site/blocks";
+import { getContent } from "@/server/services/content";
 import { listPosts } from "@/server/services/catalog";
 
 export const metadata: Metadata = { title: "FAQs" };
 
 export default async function FaqPage() {
+  const h = (await getContent("pageHeadings")).faq;
   const faqs = await listPosts("FAQ");
   const ld = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.title, acceptedAnswer: { "@type": "Answer", text: f.body } })) };
   return (
     <>
-      <Hero eyebrow="Answers" title="Frequently asked questions" />
+      <Hero eyebrow={h.kicker} title={h.title}>{h.intro}</Hero>
       <Section tone="white">
         <div className="max-w-3xl space-y-3">
           {faqs.map((f) => (
