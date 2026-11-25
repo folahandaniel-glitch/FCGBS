@@ -59,3 +59,15 @@ export const COURSE_TEACHINGS: Record<string, string[]> = {
   THE201: ["genesis-1-1-5-in-the-beginning", "genesis-3-1-15-the-fall-and-the-first-promise"],
   HEB301: ["genesis-1-1-5-in-the-beginning", "exodus-3-1-15-the-burning-bush-and-the-name", "isaiah-53-the-suffering-servant"], GRK301: ["john-1-1-18-the-word-became-flesh", "romans-3-21-26-the-righteousness-of-god", "philippians-2-5-11-the-mind-of-christ"],
 };
+
+// further exegesis studies, added to whatever each course already lists
+const MORE_EXEGESIS: Record<string, string[]> = {
+  BIB201: ["genesis-12-1-9-the-call-of-abram"], THE201: ["genesis-12-1-9-the-call-of-abram"], BIB303: ["genesis-12-1-9-the-call-of-abram", "jeremiah-31-31-34-the-new-covenant", "daniel-7-9-14-the-son-of-man-and-the-kingdom"],
+  BIB203: ["psalm-51-a-prayer-of-repentance"], BIB210: ["psalm-51-a-prayer-of-repentance"],
+  BIB204: ["isaiah-6-1-8-the-vision-of-the-holy-god", "jeremiah-31-31-34-the-new-covenant", "ezekiel-37-1-14-the-valley-of-dry-bones", "daniel-7-9-14-the-son-of-man-and-the-kingdom"],
+  BIB304: ["isaiah-6-1-8-the-vision-of-the-holy-god", "jeremiah-31-31-34-the-new-covenant", "daniel-7-9-14-the-son-of-man-and-the-kingdom"],
+  BIB306: ["ezekiel-37-1-14-the-valley-of-dry-bones", "daniel-7-9-14-the-son-of-man-and-the-kingdom", "1-corinthians-15-1-11-the-gospel-and-the-resurrection"],
+  THE206: ["ezekiel-37-1-14-the-valley-of-dry-bones"], THE202: ["1-corinthians-15-1-11-the-gospel-and-the-resurrection"],
+  BIB206: ["1-corinthians-15-1-11-the-gospel-and-the-resurrection"], BIB301: ["psalm-51-a-prayer-of-repentance", "isaiah-6-1-8-the-vision-of-the-holy-god"], HEB301: ["psalm-51-a-prayer-of-repentance", "isaiah-6-1-8-the-vision-of-the-holy-god", "jeremiah-31-31-34-the-new-covenant"], GRK301: ["1-corinthians-15-1-11-the-gospel-and-the-resurrection"],
+};
+for (const [code, slugs] of Object.entries(MORE_EXEGESIS)) COURSE_TEACHINGS[code] = [...new Set([...(COURSE_TEACHINGS[code] ?? []), ...slugs])];

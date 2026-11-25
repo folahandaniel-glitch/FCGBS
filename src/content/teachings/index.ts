@@ -8,6 +8,7 @@ import { FOUNDATIONS } from "./foundations";
 import { KINGDOM } from "./kingdom";
 import { TECHNOLOGY } from "./technology";
 import { EXEGESIS } from "./exegesis";
+import { EXEGESIS_MORE } from "./exegesis-more";
 
 export { TRACKS } from "./tracks";
-export const TEACHINGS: TeachingSeed[] = [...APOSTOLIC, ...PASTORAL, ...EVANGELICAL, ...PROPHETIC, ...REVIVAL, ...FOUNDATIONS, ...KINGDOM, ...TECHNOLOGY, ...EXEGESIS];
+export const TEACHINGS: TeachingSeed[] = [...APOSTOLIC, ...PASTORAL, ...EVANGELICAL, ...PROPHETIC, ...REVIVAL, ...FOUNDATIONS, ...KINGDOM, ...TECHNOLOGY, ...EXEGESIS, ...EXEGESIS_MORE];

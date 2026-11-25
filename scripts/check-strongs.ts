@@ -2,10 +2,11 @@
 import fs from "node:fs";
 import zlib from "node:zlib";
 import { EXEGESIS } from "../src/content/teachings/exegesis";
+import { EXEGESIS_MORE } from "../src/content/teachings/exegesis-more";
 
 const dict = JSON.parse(zlib.gunzipSync(fs.readFileSync("data/bible/strongs.json.gz")).toString());
 let missing = 0;
-for (const t of EXEGESIS) {
+for (const t of [...EXEGESIS, ...EXEGESIS_MORE]) {
   const ids = [...new Set([...t.body.matchAll(/\b([HG]\d{1,4})\b/g)].map((m) => m[1]))];
   for (const id of ids) {
     const e = dict[id];
