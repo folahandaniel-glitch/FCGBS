@@ -3,26 +3,42 @@ import type { QuestionSeed } from "./types";
 /** Further Hard Questions. Original FCGBS text; where Christians differ, the views are stated fairly; history and archaeology are limited to what is well documented. */
 export const MORE_QUESTIONS: QuestionSeed[] = [
   { slug: "who-was-melchizedek", category: "Origins and the Bible",
-    title: "Who was Melchizedek?",
-    summary: "Melchizedek was a real king-priest of Salem who blessed Abraham (Genesis 14). Psalm 110 makes his 'order' the pattern of the Messiah's priesthood, and Hebrews 7 shows that Christ is a priest like him, not by descent but by an indestructible life. Views differ on whether he was an ordinary Canaanite ruler who worshipped the true God, or an appearance of the Son before He became man; the New Testament itself says only that he was 'made like unto the Son of God'.",
-    scriptures: ["Genesis 14:17-24", "Psalms 110:1-7", "Psalms 76:1-3", "Hebrews 5:5-10", "Hebrews 6:19-20", "Hebrews 7:1-28"],
+    title: "Who was Melchizedek, and why did he bring Abraham bread and wine?",
+    summary: "Hebrews teaches that Melchizedek, king of Salem (peace) and king of righteousness, was priest of the most high God, greater than Abraham and Levi, recorded without genealogy, birth or death, and made like the Son of God: the pattern of Christ's everlasting priesthood. The bread and wine he brought to Abraham after the battle foreshadow the bread and cup that Jesus, our High Priest after that order, gave at the Last Supper as His body and the blood of the new covenant.",
+    scriptures: ["Genesis 14:17-24", "Psalms 110:1-7", "Psalms 76:1-3", "Hebrews 5:5-10", "Hebrews 6:19-20", "Hebrews 7:1-28", "Matthew 26:26-29", "Luke 22:14-20", "1 Corinthians 11:23-26"],
     readings: ["Paul Ellingworth, The Epistle to the Hebrews (NIGTC)", "William Lane, Hebrews 1–8 (Word Biblical Commentary)", "Gordon Wenham, Genesis 1–15 (WBC)", "Fred Horton, The Melchizedek Tradition"],
-    exegetical: `## The Genesis account
-After Abraham's victory over the eastern kings, "Melchizedek king of Salem brought forth bread and wine: and he was the priest of the most high God" (Genesis 14:18, KJV). He blesses Abraham in the name of "the most high God, possessor of heaven and earth" (14:19), and Abraham gives him a tenth of the spoils (14:20). He appears suddenly and disappears; the text says nothing of his parents, birth or death.
+    exegetical: `## The event
+"And Melchizedek king of Salem brought forth bread and wine: and he was the priest of the most high God" (Genesis 14:18, KJV). He blessed Abram: "Blessed be Abram of the most high God, possessor of heaven and earth" (Genesis 14:19, KJV), and Abram "gave him tithes of all" (14:20). He met Abraham between a victory and a temptation: the king of Sodom was about to offer him the spoils, which Abraham refused (14:21–23).
 
-## Salem and the name
-*Melek-tsedek* (H4442) means "king of righteousness" (or "my king is righteousness"). Salem (*Shalem*, H8004, from *shalom*) is identified with Jerusalem in Psalm 76:2, "In Salem also is his tabernacle, and his dwelling place in Zion" (KJV).
+## Melchizedek according to Hebrews
+"For this Melchisedec, king of Salem, priest of the most high God, who met Abraham returning from the slaughter of the kings, and blessed him" (Hebrews 7:1, KJV). The writer teaches:
+1. **His names:** first "King of righteousness, and after that also King of Salem, which is, King of peace" (7:2). Righteousness comes before peace.
+2. **His record:** "Without father, without mother, without descent, having neither beginning of days, nor end of life; but made like unto the Son of God; abideth a priest continually" (Hebrews 7:3, KJV). No priestly pedigree, no recorded birth or death, no successor.
+3. **His greatness:** Abraham the patriarch paid him tithes, and Levi, still in Abraham's loins, did so through him (7:4–10).
+4. **His blessing:** "And without all contradiction the less is blessed of the better" (Hebrews 7:7, KJV).
+5. **A change of priesthood:** perfection did not come through Levi, so another priest arose, from Judah, which requires a change of the law (7:11–14).
+6. **An endless life and an oath:** "For he testifieth, Thou art a priest for ever after the order of Melchisedec" (Hebrews 7:17, KJV), sworn by God (7:20–22; Psalm 110:4).
+7. **A priest who saves completely:** because He continues for ever, "he is able also to save them to the uttermost that come unto God by him, seeing he ever liveth to make intercession for them" (Hebrews 7:25, KJV).
+Hebrews' purpose is not to satisfy curiosity about Melchizedek but to show that Jesus is the greater, final and living High Priest.
 
-## Psalm 110
-David, writing of the Messiah, says: "The LORD hath sworn, and will not repent, Thou art a priest for ever after the order of Melchizedek" (Psalm 110:4, KJV). A king who is also a priest is something the law of Moses did not allow (kings from Judah, priests from Levi). Psalm 110 therefore points to a new kind of priest-king.
+## Was he the Son of God Himself?
+Hebrews says he was "made like unto the Son of God" and that Christ arose "after the similitude of Melchisedec" (7:15). Most interpreters therefore take him as a real king-priest whom God made a living picture of Christ. Some believe he was an appearance of the Son before Bethlehem, because of the words "neither beginning of days, nor end of life". Faithful teachers hold both.
 
-## Hebrews 5–7
-The writer explains the verse. Melchizedek's name and city show that he is "first being by interpretation King of righteousness, and after that also King of Salem, which is, King of peace" (Hebrews 7:2, KJV). The silence of Genesis about his ancestry is read as a picture: he is "Without father, without mother, without descent, having neither beginning of days, nor end of life; but made like unto the Son of God; abideth a priest continually" (Hebrews 7:3, KJV). Because Abraham (and so Levi, in Abraham's loins) paid tithes to him and received his blessing, his priesthood is greater than the Levitical one (7:4–10). Since perfection did not come through the Levitical priesthood, another priest was needed "after the order of Melchisedec" (7:11), and Jesus is that priest "after the power of an endless life" (7:16), appointed by God's oath (7:20–22).
+## Why bread and wine to Abraham, and why Jesus did the same
+Genesis states the act; neither Genesis nor Hebrews states the reason. Reading the whole Bible together, the church has seen the following:
+- **Refreshment and welcome:** a king met a weary victor with food and drink, and with it blessed him.
+- **A priestly, covenant meal:** it came from "the priest of the most high God" with a blessing, and shared meals sealed fellowship and covenant.
+- **God, not man, as the source:** Abraham received from the priest of God before the king of Sodom offered him goods. Nourished and blessed by God, he refused to be made rich by Sodom.
+- **A foreshadowing of Christ:** the priest-king brought bread and wine; the greater Priest-King "took bread, and gave thanks, and brake it, and gave unto them, saying, This is my body which is given for you: this do in remembrance of me" (Luke 22:19, KJV), and of the cup, "This cup is the new testament in my blood, which is shed for you" (Luke 22:20, KJV).
 
-## Was Melchizedek a man or the Son?
-1. **A historical king who served the true God.** Most commentators read Genesis 14 as describing a Canaanite city-king who, like Job, knew the one true God. Hebrews says he is "made like" the Son (*aphomoiomenos*, G871), which means a likeness, not an identity. The writer works from what Genesis does not say.
-2. **A pre-incarnate appearance of Christ (a theophany).** Some early and later interpreters (and some modern evangelicals) hold that he was the Son in human form. The argument: no beginning or end of days, and priest for ever. Against it: Hebrews compares him to the Son and calls Christ "another priest" who "ariseth after the similitude of Melchisedec" (7:15), which is awkward if they are the same person.
-3. **An angel or exalted being.** The Qumran text 11Q13 (below) and some Jewish writings picture a heavenly Melchizedek. The Bible does not teach this.`,
+## The picture and the fulfilment
+- **Then:** King of righteousness and peace, and priest. **In Christ:** Our righteousness and peace, King and High Priest.
+- **Then:** Brings bread and wine. **In Christ:** Gives bread and the cup.
+- **Then:** After the defeat of the kings who took captives. **In Christ:** On the eve of the victory that frees captives.
+- **Then:** Blesses Abraham, father of the faithful. **In Christ:** Blesses all who believe, Abraham's children by faith.
+- **Then:** Receives tithes in recognition of his priesthood. **In Christ:** Receives our whole lives in worship.
+
+Melchizedek's meal was a sign; Christ's is the reality it pointed toward, for He gave not only bread and wine but Himself. And He spoke of a meal still to come: "I will not drink henceforth of this fruit of the vine, until that day when I drink it new with you in my Father's kingdom" (Matthew 26:29, KJV).`,
     archaeological: `- **Jerusalem before David.** The Amarna letters (Egypt, about 1350 BC) include letters from Abdi-Heba, ruler of *Urusalim*, a Canaanite city-king who calls himself appointed by the king of Egypt, not by his father or mother. This shows that Jerusalem was an important city-state with a local ruler in the Late Bronze period, a setting consistent with a king of Salem. (Abraham's own date is earlier and debated.)
 - **King-priests in the ancient Near East.** Kings often served as chief priests (Egyptian pharaohs, Ugaritic and Mesopotamian kings), so a king who is "priest of the most high God" fits the culture; what is distinctive is the worship of one God, *El Elyon*. A Ugaritic god-name *El* and the title "Most High" (*Elyon*) are attested in Canaan and in an Aramaic treaty from Sefire (8th century BC).
 - **11QMelchizedek (Qumran).** A scroll from the first century BC presents Melchizedek as a heavenly figure who proclaims release at the end of the age, quoting Psalm 82 and Isaiah 61. It shows that Melchizedek was a subject of expectation in Judaism when Hebrews was written. It is not Scripture.`,
@@ -37,11 +53,32 @@ The writer explains the verse. Melchizedek's name and city show that he is "firs
     pastoral: `The comfort of Melchizedek is that our High Priest lives for ever and intercedes for us. Invite believers to approach God confidently (Hebrews 4:16), without any other priest or intermediary, and to remember that their prayers are carried by a priest who never dies.` },
 
   { slug: "divorce-and-remarriage", category: "Church and ministry",
-    title: "What does the Bible teach about divorce and remarriage?",
-    summary: "God's design is a lifelong covenant between one man and one woman, and He hates the violence and faithlessness that break it. The Bible nonetheless recognises grounds on which a marriage may be ended (sexual immorality, and desertion by an unbelieving partner), and Christians differ on how far these extend and on whether remarriage is permitted. The church must uphold marriage firmly while treating the divorced, and the abused, with compassion.",
-    scriptures: ["Genesis 2:18-24", "Deuteronomy 24:1-4", "Malachi 2:13-16", "Matthew 5:31-32", "Matthew 19:3-12", "Mark 10:2-12", "Romans 7:1-3", "1 Corinthians 7:10-16", "1 Corinthians 7:39-40", "Hosea 3:1-3"],
+    title: "Marriage, divorce and remarriage: why must marriage be ordained by God?",
+    summary: "Marriage is God's institution, not man's invention. It should be entered at His leading and on His terms, not driven by human cleverness, lust, manipulation, pressure or material gain, because He designed it, joins it and sustains it. A union built without God lacks that foundation and blessing; yet it is still a binding marriage, and Scripture tells a believer not to abandon a spouse on that ground. God hates faithless divorce, recognises limited grounds for ending a marriage, and offers grace to the broken.",
+    scriptures: ["Genesis 2:18-24", "Genesis 24:1-67", "Psalms 127:1-5", "Proverbs 18:22", "Proverbs 19:14", "Amos 3:3", "2 Corinthians 6:14-18", "1 Corinthians 7:12-14", "Deuteronomy 24:1-4", "Malachi 2:13-16", "Matthew 5:31-32", "Matthew 19:3-12", "Mark 10:2-12", "Romans 7:1-3", "1 Corinthians 7:10-16", "1 Corinthians 7:39-40", "Hosea 3:1-3"],
     readings: ["David Instone-Brewer, Divorce and Remarriage in the Church", "William Heth and Gordon Wenham, Jesus and Divorce", "Craig Keener, And Marries Another", "Wayne Grudem, Systematic Theology (chapter on marriage and divorce)", "Divorce and Remarriage: Four Christian Views (IVP)"],
-    exegetical: `## God's intention
+    exegetical: `## Why marriage must be ordained by God
+**1. He is its author.** Marriage began before any government, culture or church. God said, "It is not good that the man should be alone; I will make him an help meet for him" (Genesis 2:18, KJV). God made the woman "and brought her unto the man" (Genesis 2:22). Adam did not manufacture his wife; he received her.
+**2. He does the joining.** "What therefore God hath joined together, let not man put asunder" (Matthew 19:6, KJV).
+**3. A good spouse is His gift.** "Whoso findeth a wife findeth a good thing, and obtaineth favour of the LORD" (Proverbs 18:22, KJV); "a prudent wife is from the LORD" (Proverbs 19:14).
+**4. He must build the home.** "Except the LORD build the house, they labour in vain that build it" (Psalm 127:1, KJV).
+**5. Two must walk in agreement.** "Can two walk together, except they be agreed?" (Amos 3:3, KJV). A believer is to marry "only in the Lord" (1 Corinthians 7:39) and not be "unequally yoked together with unbelievers" (2 Corinthians 6:14).
+**6. It pictures Christ and the church** (Ephesians 5:31–32), so it carries God's name and purpose.
+
+## What must not lead us
+- **Human logic and wisdom alone:** "lean not unto thine own understanding" (Proverbs 3:5).
+- **Mere wish and attraction:** Samson chose by sight (Judges 14:1–3).
+- **Manipulation, deceit or force:** Laban's trick brought years of rivalry (Genesis 29). Charms, false prophecy, pressure and pregnancy used as a trap are not God's leading.
+- **Material need:** money, visa, status or escape from poverty cannot hold a covenant.
+- **Compromise with idolatry:** Solomon's marriages turned his heart (1 Kings 11:1–4).
+
+## How to be led
+Abraham's servant prayed, sought God's guidance, watched for character and obtained consent (Genesis 24); the family said, "The thing proceedeth from the LORD" (Genesis 24:50, KJV), and Rebekah herself agreed to go. So pray, search the Scriptures, test character and shared faith, seek godly counsel, give free consent, and make the covenant publicly and lawfully. Guidance claimed by one person or by a "prophet" never overrides the free consent of the other.
+
+## Is a marriage without God no marriage?
+This school stresses that a marriage without God lacks the foundation, blessing and purpose God intends, and is not Christian marriage in its fulness. Scripture also guards us from a dangerous conclusion: such a union is still a real, binding marriage. To a believer with an unbelieving partner Paul says, "If any brother hath a wife that believeth not, and she be pleased to dwell with him, let him not put her away" (1 Corinthians 7:12, KJV), and "the unbelieving husband is sanctified by the wife" (7:14). No one may leave a spouse, or take another, by saying "God was not in it". The right response is to bring God into the home now: repent of wrong motives, pray, forgive, and seek counsel. God can redeem a marriage that began badly.
+
+## God's intention
 "Therefore shall a man leave his father and his mother, and shall cleave unto his wife: and they shall be one flesh" (Genesis 2:24, KJV). Jesus quotes this and concludes: "What therefore God hath joined together, let not man put asunder" (Matthew 19:6, KJV).
 
 ## The Old Testament law

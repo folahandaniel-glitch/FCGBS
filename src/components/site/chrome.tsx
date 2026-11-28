@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { LayoutDashboard, Mail, MapPin, Phone } from "lucide-react";
 import { getBrand } from "@/server/brand";
 import { getContent } from "@/server/services/content";
 import { BrandLockup, Logo } from "../brand";
@@ -17,19 +17,21 @@ export async function SiteHeader() {
       <header className="sticky top-0 z-50 border-b border-line/80 bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <BrandLockup markUrl={brand.markUrl} name={brand.name} short={brand.shortName} subtitle="Christian Global Bible School" />
-          <nav aria-label="Primary" className="hidden items-center gap-0.5 xl:flex">
-            {items.map((l) => (
-              <Link key={l.href} href={l.href} prefetch={false} className="whitespace-nowrap rounded-lg px-2.5 py-2 text-[0.82rem] font-semibold text-navy-800/85 hover:bg-royal-50 hover:text-royal-700">
-                {l.label}
-              </Link>
-            ))}
-          </nav>
           <div className="hidden items-center gap-2 xl:flex">
+            <Link href="/backend" prefetch={false} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-navy-800 px-3.5 py-2 text-xs font-bold text-white hover:bg-royal-700"><LayoutDashboard className="size-4 text-gold-400" aria-hidden />{nav.backendLabel}</Link>
             <Link href="/login" className={buttonClass("ghost", "sm")}>{nav.signInLabel}</Link>
             <Link href={nav.applyHref} className={buttonClass("gold", "sm")}>{nav.applyLabel}</Link>
           </div>
+          <Link href="/backend" prefetch={false} className="ml-auto inline-flex h-11 items-center gap-1.5 whitespace-nowrap rounded-xl bg-navy-800 px-3 text-xs font-bold text-white xl:hidden"><LayoutDashboard className="size-4 text-gold-400" aria-hidden />{nav.backendLabel}</Link>
           <MobileNav links={[{ href: "/", label: "Home" }, ...items, { href: "/verify", label: "Verify a Certificate" }, { href: "/faq", label: "FAQs" }, { href: "/contact", label: "Contact" }]} />
         </div>
+        <nav aria-label="Primary" className="mx-auto hidden max-w-7xl flex-wrap items-center justify-center gap-0.5 border-t border-line/60 px-4 py-1 xl:flex">
+          {items.map((l) => (
+            <Link key={l.href} href={l.href} prefetch={false} className="whitespace-nowrap rounded-lg px-2.5 py-2 text-[0.82rem] font-semibold text-navy-800/85 hover:bg-royal-50 hover:text-royal-700">
+              {l.label}
+            </Link>
+          ))}
+        </nav>
       </header>
     </>
   );

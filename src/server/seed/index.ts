@@ -7,6 +7,8 @@ import { COURSE_TEACHINGS } from "@/content/course-teachings";
 import { ELECTIVE_ADDITIONS, NEW_PROGRAMMES } from "@/content/programmes-more";
 import { MATERIALS } from "@/content/materials";
 import { QUESTIONS_SEED } from "@/content/questions";
+import { QUESTION_REVISIONS } from "@/content/questions/revisions";
+import { createHash } from "node:crypto";
 import { FAQS, POLICIES } from "@/content/policies";
 import { TEACHINGS, TRACKS } from "@/content/teachings";
 import type { DB } from "../db";
@@ -179,6 +181,16 @@ export async function seedStructure(db: DB) {
     for (let i = 0; i < fresh.length; i += 10) {
       await db.insert(s.hardQuestions).values(fresh.slice(i, i + 10).map((q, j) => ({ slug: q.slug, title: q.title, category: q.category, summary: q.summary, exegetical: q.exegetical ?? null, genealogical: q.genealogical ?? null, archaeological: q.archaeological ?? null, apostolic: q.apostolic ?? null, prophetic: q.prophetic ?? null, theological: q.theological ?? null, views: q.views ?? null, pastoral: q.pastoral ?? null, scriptures: q.scriptures.join("\n"), readings: (q.readings ?? []).join("\n"), featured: Boolean(q.featured), sort: i + j, status: "PUBLISHED" as const }))).onConflictDoNothing();
     }
+  }
+
+  // ---- revised questions: replaced only while the stored text is exactly what was seeded before
+  for (const [slug, oldHash] of Object.entries(QUESTION_REVISIONS)) {
+    const [row] = await db.select().from(s.hardQuestions).where(eq(s.hardQuestions.slug, slug));
+    const q = QUESTIONS_SEED.find((x) => x.slug === slug);
+    if (!row || !q) continue;
+    const parts = [row.title, row.summary, row.exegetical, row.genealogical, row.archaeological, row.apostolic, row.prophetic, row.theological, row.views, row.pastoral, row.scriptures, row.readings];
+    if (createHash("sha256").update(parts.map((p) => p ?? "").join("\u0000")).digest("hex") !== oldHash) continue;
+    await db.update(s.hardQuestions).set({ title: q.title, summary: q.summary, exegetical: q.exegetical ?? null, genealogical: q.genealogical ?? null, archaeological: q.archaeological ?? null, apostolic: q.apostolic ?? null, prophetic: q.prophetic ?? null, theological: q.theological ?? null, views: q.views ?? null, pastoral: q.pastoral ?? null, scriptures: q.scriptures.join("\n"), readings: (q.readings ?? []).join("\n") }).where(eq(s.hardQuestions.id, row.id));
   }
 
   // ---- starter study materials (links), added once per owner and title

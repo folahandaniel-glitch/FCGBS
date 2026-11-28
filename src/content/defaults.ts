@@ -23,6 +23,7 @@ export interface Slide {
 export const CONTENT_DEFAULTS = {
   nav: {
     signInLabel: "Sign in",
+    backendLabel: "BackEnd",
     applyLabel: "Apply now",
     applyHref: "/apply",
     items: [
