@@ -176,3 +176,27 @@ export async function deleteResource(actor: Actor, r: Resource, id: string, ctx:
 }
 
 export const resourceFor = (key: string) => RESOURCES[key] ?? null;
+
+/**
+ * "Approve all": publishes every record that is waiting (In review or Approved) for people who may approve that kind of record.
+ * Drafts are left alone, so unfinished work is never published by accident. Each one is saved with the same board record and audit
+ * trail as approving it by hand.
+ */
+export async function approveAllWaiting(actor: Actor, r: Resource, ctx: ReqCtx) {
+  if (!r.approvePerm || !can(actor, r.approvePerm)) throw new AppError("FORBIDDEN", "You do not have permission to approve these.");
+  const waiting = (await listResource(r, undefined, 1000)).filter((x) => x.status === "REVIEW" || x.status === "APPROVED");
+  const db = getDb();
+  for (const row of waiting) {
+    const patch: Record<string, unknown> = { status: "PUBLISHED" };
+    if ("updatedAt" in row) patch.updatedAt = new Date();
+    if (r.key === "posts") patch.publishedAt = new Date();
+    if (r.key === "programmes") { patch.approvedBy = actor.id; patch.approvedAt = new Date(); }
+    const title = String(row.title ?? row.name ?? row.code ?? "");
+    await db.transaction(async (tx) => {
+      await tx.update(r.table).set(patch as never).where(eq(col(r, "id"), String(row.id)));
+      if (r.key === "programmes" || r.key === "courses") await tx.insert(s.boardDecisions).values({ kind: r.key === "programmes" ? "PROGRAMME" : "COURSE", refType: r.key, refId: String(row.id), title, decision: "APPROVED", decidedBy: actor.id });
+      await audit({ actor, action: `${r.key}.approved`, entityType: r.key, entityId: String(row.id), summary: title }, ctx, tx);
+    });
+  }
+  return waiting.length;
+}

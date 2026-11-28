@@ -8,7 +8,7 @@ import { isDeveloper, listPlatformAccounts, systemInfo } from "@/server/services
 import { AccountActions, CreateAccountForm } from "./controls";
 
 const TOOLS = [
-  ["/admin/roles", "Roles & permissions"], ["/admin/settings", "Settings"], ["/admin/audit", "Audit & security log"], ["/admin/content", "Website content"],
+  ["/admin/books", "Books & purchase codes"], ["/admin/roles", "Roles & permissions"], ["/admin/settings", "Settings"], ["/admin/audit", "Audit & security log"], ["/admin/content", "Website content"],
   ["/admin/branding", "Logo & pictures"], ["/admin/upload-centre", "Upload centre"], ["/admin/access-codes", "Access codes"], ["/admin/faculty", "Faculty & staff"],
 ] as const;
 

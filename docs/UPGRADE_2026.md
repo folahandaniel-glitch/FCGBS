@@ -54,3 +54,8 @@ The owner's Super Admin account (the address in `SUPERADMIN_EMAIL`, or the built
 ## Colourful look across website, portals and BackEnd
 
 CSS only (no extra images or downloads): colourful page background, rotating section and card tints, rainbow accents, gradient header menu, footer, sidebar and buttons, solid-colour dashboard tiles, tinted table headings. Rules are in the "Colour" block of `src/app/globals.css`; print stays white.
+
+## Bookstore and Approve all
+
+- **Books** (`/books`, Admin > Books & codes, Super Admin only): upload a manuscript (Word "Heading 1" = chapter, or Markdown), approve it for sale, create one-time codes (BK-XXXX-XXXX-XXXX) per book. A code binds the book to one account; buyers read online with their name on each page; PDF/Word download is off unless switched on per buyer; codes can be revoked. Payment happens outside the site. Migration 0008. Book text lives only in the database, never in the repository.
+- **Approve all**: content lists (records In review or Approved; drafts untouched), enrolment requests, examination question bank, results (review/approve only, never publish) and books. Each uses the same permission and separation-of-duty checks as single approval.

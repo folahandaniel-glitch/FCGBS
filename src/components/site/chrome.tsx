@@ -9,7 +9,7 @@ import { MobileNav } from "./mobile-nav";
 export async function SiteHeader() {
   const [brand, nav] = await Promise.all([getBrand(), getContent("nav")]);
   const base = [...nav.items];
-  for (const extra of [{ label: "Bible", href: "/bible" }, { label: "Teachings", href: "/teachings" }, { label: "Hard Questions", href: "/questions" }]) if (!base.some((i) => i.href === extra.href)) base.splice(Math.min(3, base.length), 0, extra);
+  for (const extra of [{ label: "Bible", href: "/bible" }, { label: "Teachings", href: "/teachings" }, { label: "Hard Questions", href: "/questions" }, { label: "Books", href: "/books" }]) if (!base.some((i) => i.href === extra.href)) base.splice(Math.min(3, base.length), 0, extra);
   const items = base.filter((i) => (i.href === "/technology-hub" ? brand.flags.techHub : i.href === "/kingdom-enterprise" ? brand.flags.kingdomHub : i.href === "/library" ? brand.flags.library : true));
   return (
     <>

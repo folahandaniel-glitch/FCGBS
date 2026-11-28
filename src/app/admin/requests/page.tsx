@@ -5,7 +5,7 @@ import { Confirm } from "@/components/admin/row-actions";
 import { Badge, Card, EmptyState, PageHeader, Table, Td, Th } from "@/components/ui/primitives";
 import { requireStaffPage } from "@/server/http";
 import { pendingRequests } from "@/server/services/selfservice";
-import { decideRequestAction } from "../request-actions";
+import { approveAllRequestsAction, decideRequestAction } from "../request-actions";
 
 export const metadata: Metadata = { title: "Enrolment requests" };
 const fmt = (d: Date | null) => (d ? new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(d) : "—");
@@ -16,7 +16,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
   const rows = await pendingRequests(all ? "ALL" : "PENDING");
   return (
     <>
-      <PageHeader title="Enrolment requests" description="Learners ask for programmes and courses beyond their free certificate. Approving enrols the learner and opens the course for the current semester. Learners are told to contact the school office, so you can confirm payment or suitability first." actions={<Link href={all ? "/admin/requests" : "/admin/requests?all=1"} className="rounded-xl bg-white px-3.5 py-2 text-sm font-semibold ring-1 ring-line hover:bg-royal-50">{all ? "Show waiting only" : "Show history"}</Link>} />
+      <PageHeader title="Enrolment requests" description="Learners ask for programmes and courses beyond their free certificate. Approving enrols the learner and opens the course for the current semester. Learners are told to contact the school office, so you can confirm payment or suitability first." actions={<>{rows.some((r) => r.status === "PENDING") && <Confirm label={`Approve all (${rows.filter((r) => r.status === "PENDING").length})`} variant="primary" confirmVariant="primary" confirmLabel="Approve all" title="Approve every waiting request?" description="Each learner is enrolled and their courses are opened straight away. Check payments first." run={async () => { "use server"; return approveAllRequestsAction(); }} />}<Link href={all ? "/admin/requests" : "/admin/requests?all=1"} className="rounded-xl bg-white px-3.5 py-2 text-sm font-semibold ring-1 ring-line hover:bg-royal-50">{all ? "Show waiting only" : "Show history"}</Link></>} />
       <Card>
         {rows.length === 0 ? <EmptyState icon={<Inbox className="size-6" />} title={all ? "No requests yet." : "No requests are waiting."} /> : (
           <Table>

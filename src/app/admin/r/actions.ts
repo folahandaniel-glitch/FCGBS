@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { action, type ActionResult } from "@/server/http";
 import { AppError } from "@/server/errors";
-import { deleteResource, resourceFor, saveResource } from "@/server/admin-resources";
+import { approveAllWaiting, deleteResource, resourceFor, saveResource } from "@/server/admin-resources";
 import { readFormFile } from "@/server/files";
 import { storeAsset } from "@/server/services/assets";
 
@@ -45,4 +45,10 @@ export async function deleteResourceAction(key: string, id: string) {
   const r = resourceFor(key);
   if (!r) throw new AppError("NOT_FOUND", "Unknown record type.");
   return action({ role: "staff", perm: r.perm }, async (a, ctx) => { await deleteResource(a, r, id, ctx); revalidatePath("/", "layout"); }, "Deleted.");
+}
+
+export async function approveAllAction(key: string) {
+  const r = resourceFor(key);
+  if (!r) throw new AppError("NOT_FOUND", "Unknown record type.");
+  return action({ role: "staff", perm: r.perm }, async (a, ctx) => { const n = await approveAllWaiting(a, r, ctx); revalidatePath("/", "layout"); return { n }; }, "Approved and published.");
 }

@@ -57,6 +57,13 @@
       "when": 1795833215653,
       "tag": "0007_absent_madelyne_pryor",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795834213765,
+      "tag": "0008_cold_skreet",
+      "breakpoints": true
     }
   ]
 }

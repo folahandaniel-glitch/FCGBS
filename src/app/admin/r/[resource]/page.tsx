@@ -4,13 +4,17 @@ import { Plus } from "lucide-react";
 import { Badge, Card, EmptyState, PageHeader, StatusBadge, Table, Td, Th, buttonClass, inputClass } from "@/components/ui/primitives";
 import { listResource, lookupOptions, resourceFor } from "@/server/admin-resources";
 import { requireStaffPage } from "@/server/http";
+import { Confirm } from "@/components/admin/row-actions";
+import { can } from "@/core/permissions";
+import { approveAllAction } from "../actions";
 
 export default async function ResourceList({ params, searchParams }: { params: Promise<{ resource: string }>; searchParams: Promise<{ q?: string }> }) {
   const r = resourceFor((await params).resource);
   if (!r) notFound();
-  await requireStaffPage(r.perm);
+  const sess = await requireStaffPage(r.perm);
   const q = (await searchParams).q?.slice(0, 60);
   const rows = await listResource(r, q);
+  const waiting = r.approvePerm && can(sess.actor, r.approvePerm) ? (await listResource(r, undefined, 1000)).filter((x) => x.status === "REVIEW" || x.status === "APPROVED").length : 0;
   const cols = r.fields.filter((f) => f.list);
   const lookups = Object.fromEntries(await Promise.all(cols.filter((c) => c.lookup).map(async (c) => [c.name, new Map((await lookupOptions(c.lookup!)).map((o) => [o.value, o.label]))] as const)));
   const show = (f: (typeof cols)[number], v: unknown) => {
@@ -22,7 +26,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
   };
   return (
     <>
-      <PageHeader title={r.label} description={r.help} actions={<Link href={`/admin/r/${r.key}/new`} className={buttonClass("primary", "md")}><Plus className="size-4" /> Add {r.singular.toLowerCase()}</Link>} />
+      <PageHeader title={r.label} description={r.help} actions={<>{waiting > 0 && <Confirm label={`Approve all (${waiting})`} variant="primary" confirmVariant="primary" confirmLabel="Approve all" title="Approve and publish everything that is waiting?" description="Records marked In review or Approved are published. Drafts are not touched." run={async () => { "use server"; return approveAllAction(r.key); }} />}<Link href={`/admin/r/${r.key}/new`} className={buttonClass("primary", "md")}><Plus className="size-4" /> Add {r.singular.toLowerCase()}</Link></>} />
       {r.search && <form role="search" className="mb-4 flex max-w-md gap-2"><input name="q" defaultValue={q} placeholder={`Search ${r.label.toLowerCase()}…`} className={inputClass} aria-label="Search" /><button className="rounded-xl bg-navy-800 px-4 text-sm font-semibold text-white">Search</button></form>}
       <Card>
         {rows.length === 0 ? <EmptyState title={`No ${r.label.toLowerCase()} yet.`} action={<Link className="font-semibold text-royal-700 underline" href={`/admin/r/${r.key}/new`}>Add the first one</Link>} /> : (

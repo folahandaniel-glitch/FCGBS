@@ -78,6 +78,15 @@ export async function advanceResultsAction(ids: string[], act: "REVIEW" | "APPRO
   const perm = act === "REVIEW" ? "grades.review" : "grades.approve";
   return action({ role: "staff", perm }, async (a, ctx) => { const n = await advanceResults(a, ids, act, ctx); ref("/admin/results"); return { n }; }, "Done.");
 }
+/** Moves many classes one step at once. Review and approval only: publishing stays a deliberate, per-class step. */
+export async function advanceAllResultsAction(batches: { ids: string[]; act: "REVIEW" | "APPROVE" }[]) {
+  return action({ role: "staff", perm: ["grades.review", "grades.approve"] }, async (a, ctx) => {
+    let n = 0, skipped = 0;
+    for (const b of batches) { try { n += Number(await advanceResults(a, b.ids, b.act, ctx)) || 0; } catch { skipped++; } }
+    ref("/admin/results");
+    return { n, skipped };
+  }, "Done. Classes you may not act on were left as they were.");
+}
 export async function requestAmendmentAction(_: ActionResult | null, f: FormData) {
   return action({ role: "staff", perm: ["grades.enter", "grades.amend"] }, async (a, ctx) => { await requestAmendment(a, g(f, "resultId"), Number(g(f, "newTotal")), g(f, "reason"), ctx); ref("/admin/results"); }, "Amendment requested for approval.");
 }

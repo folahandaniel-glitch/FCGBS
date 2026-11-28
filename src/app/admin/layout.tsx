@@ -66,6 +66,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const [brand, unread] = await Promise.all([getBrand(), unreadCount(s.user.id)]);
   const groups: NavGroup[] = GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => !i.perm || i.perm.some((p) => can(s.actor, p))).map((i) => ({ href: i.href, label: i.label, icon: i.icon })) })).filter((g) => g.items.length);
   const developer = await isDeveloper(s.user.id);
+  if (s.user.userType === "SUPER_ADMIN") groups.unshift({ title: "Bookstore", items: [{ href: "/admin/books", label: "Books & codes", icon: <BookOpen /> }] });
   if (developer) groups.unshift({ title: "Owner", items: [{ href: "/admin/developer", label: "Developer console", icon: <KeyRound /> }] });
   // Lecturers get a link to their teaching portal.
   if (can(s.actor, "teaching.own") || can(s.actor, "teaching.any")) groups.splice(1, 0, { title: "Teaching", items: [{ href: "/teach", label: "My teaching portal", icon: <GraduationCap /> }] });

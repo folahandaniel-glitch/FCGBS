@@ -1,12 +1,12 @@
 import { desc, eq } from "drizzle-orm";
 import { Badge, Card, CardHeader, EmptyState, PageHeader, StatusBadge } from "@/components/ui/primitives";
 import { ActionForm, SelectField, SubmitButton, TextAreaField, TextField } from "@/components/ui/form";
-import { Do } from "@/components/admin/row-actions";
+import { Confirm, Do } from "@/components/admin/row-actions";
 import { can } from "@/core/permissions";
 import { requireStaffPage } from "@/server/http";
 import { getDb } from "@/server/db";
 import * as s from "@/server/db/schema";
-import { addQuestionAction, reviewQuestionAction } from "../../actions";
+import { addQuestionAction, approveAllQuestionsAction, reviewQuestionAction } from "../../actions";
 
 export default async function QuestionBank({ params }: { params: Promise<{ courseId: string }> }) {
   const sess = await requireStaffPage(["questions.manage", "questions.approve"]);
@@ -14,6 +14,7 @@ export default async function QuestionBank({ params }: { params: Promise<{ cours
   const [course] = await getDb().select().from(s.courses).where(eq(s.courses.id, courseId));
   const qs = await getDb().select().from(s.questions).where(eq(s.questions.courseId, courseId)).orderBy(desc(s.questions.createdAt)).limit(200);
   const approver = can(sess.actor, "questions.approve");
+  const waitingIds = qs.filter((q) => q.status !== "APPROVED").map((q) => q.id);
   return (
     <>
       <PageHeader eyebrow="Question bank" title={course?.title ?? "Course"} description="Only approved questions are drawn into examinations. Lecturers' questions need approval by someone else." />
@@ -29,7 +30,7 @@ export default async function QuestionBank({ params }: { params: Promise<{ cours
         </ActionForm>
       </Card>
       <Card>
-        <CardHeader title={`Questions (${qs.length})`} />
+        <CardHeader title={`Questions (${qs.length})`} action={approver && waitingIds.length > 0 ? <Confirm label={`Approve all (${waitingIds.length})`} variant="primary" confirmVariant="primary" confirmLabel="Approve all" title="Approve every waiting question?" description="Only approved questions are used in examinations." run={async () => { "use server"; return approveAllQuestionsAction(waitingIds, courseId); }} /> : undefined} />
         {qs.length === 0 ? <EmptyState title="No questions yet." /> : (
           <ul className="divide-y divide-line">
             {qs.map((q) => (

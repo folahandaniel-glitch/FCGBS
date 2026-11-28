@@ -1439,3 +1439,41 @@ export const hardQuestions = pgTable(
   },
   (t) => [index("hard_questions_cat_idx").on(t.category, t.sort), index("hard_questions_status_idx").on(t.status)],
 );
+
+/* ------------------------------------------------------------ e-books */
+
+/** Paid e-books. The manuscript is Markdown ("# " starts a chapter) and is only ever sent to buyers and Super Admins. */
+export const books = pgTable("books", {
+  id: id(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  subtitle: text("subtitle"),
+  author: text("author").notNull(),
+  description: text("description"),
+  price: text("price"),
+  howToBuy: text("how_to_buy"),
+  manuscript: text("manuscript").notNull().default(""),
+  coverAssetId: uuid("cover_asset_id"),
+  status: contentStatusEnum("status").notNull().default("DRAFT"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/** One code buys one book once. status: UNUSED | USED | REVOKED. */
+export const bookCodes = pgTable(
+  "book_codes",
+  {
+    id: id(),
+    bookId: uuid("book_id").notNull().references(() => books.id, { onDelete: "cascade" }),
+    codeHash: text("code_hash").notNull().unique(),
+    codeEnc: text("code_enc").notNull(),
+    status: text("status").notNull().default("UNUSED"),
+    note: text("note"),
+    usedBy: uuid("used_by").references(() => users.id, { onDelete: "set null" }),
+    usedAt: ts("used_at"),
+    downloadAllowed: boolean("download_allowed").notNull().default(false),
+    createdBy: uuid("created_by"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("book_codes_book_idx").on(t.bookId), index("book_codes_user_idx").on(t.usedBy)],
+);

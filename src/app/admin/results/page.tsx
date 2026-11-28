@@ -6,7 +6,7 @@ import { can } from "@/core/permissions";
 import { requireStaffPage } from "@/server/http";
 import { getDb } from "@/server/db";
 import * as s from "@/server/db/schema";
-import { advanceResultsAction, decideAmendmentAction, requestAmendmentAction } from "../ops-actions";
+import { advanceAllResultsAction, advanceResultsAction, decideAmendmentAction, requestAmendmentAction } from "../ops-actions";
 
 const NEXT: Record<string, { act: "REVIEW" | "APPROVE" | "PUBLISH" | "LOCK"; label: string; perm: "grades.review" | "grades.approve" } | undefined> = {
   SUBMITTED: { act: "REVIEW", label: "Mark reviewed", perm: "grades.review" },
@@ -35,9 +35,15 @@ export default async function ResultsAdmin() {
   // Group by course offering and status so a whole class can be advanced in one step.
   const groups = new Map<string, typeof rows>();
   for (const r of rows) { const k = `${r.offeringId}|${r.status}`; (groups.get(k) ?? groups.set(k, []).get(k)!).push(r); }
+  const ready = [...groups.values()].flatMap((list) => {
+    const step = NEXT[list[0].status];
+    if (!step || (step.act !== "REVIEW" && step.act !== "APPROVE") || !can(sess.actor, step.perm)) return [];
+    if (list.some((r) => r.submittedBy === sess.user.id || (step.act === "APPROVE" && r.reviewedBy === sess.user.id))) return [];
+    return [{ ids: list.map((r) => r.id), act: step.act }];
+  });
   return (
     <>
-      <PageHeader title="Results" description="Draft → Submitted → Reviewed → Approved → Published → Locked. The person who submitted a result cannot review or approve it; the reviewer cannot approve it." />
+      <PageHeader actions={ready.length > 0 ? <Confirm label={`Approve all (${ready.length} classes)`} variant="primary" confirmVariant="primary" confirmLabel="Approve all" title="Move every class you may act on one step?" description="Submitted results are marked reviewed and reviewed results are approved. Nothing is published." run={async () => { "use server"; return advanceAllResultsAction(ready); }} /> : undefined} title="Results" description="Draft → Submitted → Reviewed → Approved → Published → Locked. The person who submitted a result cannot review or approve it; the reviewer cannot approve it." />
       {groups.size === 0 && <Card><EmptyState title="No results are awaiting action." /></Card>}
       {[...groups.entries()].map(([k, list]) => {
         const first = list[0];

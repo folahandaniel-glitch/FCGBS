@@ -75,6 +75,16 @@ export async function reviewQuestionAction(questionId: string, approve: boolean,
   return action({ role: "staff", perm: "questions.approve" }, async (a, ctx) => { await reviewQuestion(a, questionId, approve, ctx); revalidatePath(`/teach/questions/${courseId}`); });
 }
 
+/** Approves every waiting question; ones the approver wrote themselves are skipped, as when approving singly. */
+export async function approveAllQuestionsAction(ids: string[], courseId: string) {
+  return action({ role: "staff", perm: "questions.approve" }, async (a, ctx) => {
+    let done = 0, skipped = 0;
+    for (const id of ids.slice(0, 500)) { try { await reviewQuestion(a, id, true, ctx); done++; } catch { skipped++; } }
+    revalidatePath(`/teach/questions/${courseId}`);
+    return { done, skipped };
+  }, "Approved. Questions you wrote yourself still need another approver.");
+}
+
 export async function setMeetingUrlAction(_: ActionResult | null, f: FormData) {
   return action(guard, async (a, ctx) => {
     const id = g(f, "offeringId");
