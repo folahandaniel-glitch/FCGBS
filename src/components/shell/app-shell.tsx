@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { Bell, LogOut, Menu, Search, X } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -53,6 +53,9 @@ export function AppShell({
   const open = openAt === path;
   const setOpen = (v: boolean) => setOpenAt(v ? path : null);
   const [q, setQ] = useState("");
+  // Each menu section is a dropdown. The one holding the current page (and the first) start open; the viewer's own choice wins.
+  const [chosen, setChosen] = useState<Record<string, boolean>>({});
+  const isOpen = (g: NavGroup, i: number) => !g.title || (chosen[g.title] ?? (i === 0 || g.items.some((it) => isActive(path, it.href, root))));
 
   const sidebar = (
     <div className="flex h-full flex-col">
@@ -67,9 +70,14 @@ export function AppShell({
       </div>
       <nav aria-label="Main" className="side-nav no-scrollbar flex-1 overflow-y-auto px-3 py-4">
         {groups.map((g, gi) => (
-          <div key={gi} className={cx(gi > 0 && "mt-5")}>
-            {g.title && <p className="mb-1.5 px-3 text-[0.64rem] font-bold uppercase tracking-[0.16em] text-white/40">{g.title}</p>}
-            <ul className="space-y-0.5">
+          <div key={gi} className={cx(gi > 0 && "mt-2")}>
+            {g.title && (
+              <button type="button" aria-expanded={isOpen(g, gi)} onClick={() => setChosen((c) => ({ ...c, [g.title!]: !isOpen(g, gi) }))} className="mb-1 flex w-full items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-2 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-white hover:bg-white/20">
+                <span className="truncate">{g.title}</span>
+                <span className="flex items-center gap-1.5 text-white/70"><span className="text-[0.62rem]">{g.items.length}</span><ChevronDown aria-hidden className={cx("size-4 transition-transform", isOpen(g, gi) && "rotate-180")} /></span>
+              </button>
+            )}
+            <ul className={cx("space-y-0.5", !isOpen(g, gi) && "hidden")}>
               {g.items.map((it) => {
                 const active = isActive(path, it.href, root);
                 return (
