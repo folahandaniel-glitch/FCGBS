@@ -14,7 +14,7 @@ export async function HomeLearn() {
     { href: "/access", t: "Access code", d: "One code opens every feature", Icon: KeyRound, c: "from-gold-500 to-amber-700" },
   ];
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-royal-50 to-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-violet-100 via-sky-100 to-amber-100">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold-600">Learn the Word of God</p>
         <h2 className="mt-1 max-w-3xl font-display text-3xl font-bold text-navy-800 sm:text-4xl">Study the Bible, Hebrew and Greek — and teachings that build the Church</h2>

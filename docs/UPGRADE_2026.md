@@ -46,3 +46,7 @@ All new content states where Christians differ and avoids unsupported archaeolog
 - A visible **BackEnd** button is in the site header on every screen size (label editable: Website content > Main menu & header buttons). On wide screens the menu now sits on its own row so it no longer squeezes the logo.
 - New Hard Questions (43 total): spiritual warfare from the war in heaven to the armour of God; why man connects to God spirit-soul-body.
 - Revised: Melchizedek (Hebrews 7; the bread and wine and the Last Supper) and marriage/divorce (why marriage must be ordained by God). `src/content/questions/revisions.ts` lets the seed replace these only where an administrator has not edited them.
+
+## Colourful look across website, portals and BackEnd
+
+CSS only (no extra images or downloads): colourful page background, rotating section and card tints, rainbow accents, gradient header menu, footer, sidebar and buttons, solid-colour dashboard tiles, tinted table headings. Rules are in the "Colour" block of `src/app/globals.css`; print stays white.

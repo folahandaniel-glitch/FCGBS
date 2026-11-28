@@ -56,7 +56,7 @@ export async function AuthShell({ title, subtitle, children, wide, tone = "stude
         </div>
       </aside>
 
-      <main id="main" className="relative flex items-center justify-center bg-[radial-gradient(circle_at_85%_10%,#fcf8ea,transparent_40%),radial-gradient(circle_at_10%_90%,#eef3ff,transparent_45%)] bg-surface px-4 py-8 sm:px-8 lg:py-12">
+      <main id="main" className="relative flex items-center justify-center bg-[radial-gradient(circle_at_85%_8%,#ffe3a3,transparent_45%),radial-gradient(circle_at_8%_92%,#c9dcff,transparent_50%),radial-gradient(circle_at_90%_88%,#ffd6e7,transparent_45%),radial-gradient(circle_at_10%_10%,#d6f7e8,transparent_45%)] bg-violet-50 px-4 py-8 sm:px-8 lg:py-12">
         <div className={`w-full ${wide ? "max-w-xl" : "max-w-md"}`}>
           <div className="rounded-3xl bg-white p-6 shadow-lift ring-1 ring-line sm:p-8">
             <div className="mb-1 h-1.5 w-16 rounded-full bg-gradient-to-r from-gold-400 via-royal-500 to-emerald-500" aria-hidden />

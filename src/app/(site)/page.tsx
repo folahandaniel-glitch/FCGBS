@@ -53,7 +53,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-surface">
+      <section data-sec="plain">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
           <Carousel slides={slides} seconds={brand.site.carouselSeconds} />
         </div>
@@ -66,7 +66,7 @@ export default async function HomePage() {
           {levels.map((lv, idx) => {
             const list = programmes.filter((p) => p.levelKey === lv);
             return (
-              <div key={lv} className="rounded-2xl border border-line bg-surface p-5">
+              <div key={lv} className="tint-card rounded-2xl border border-white p-5">
                 <p className="text-xs font-bold uppercase tracking-wide text-gold-600">Level {idx + 1}</p>
                 <h3 className="font-display mt-1 text-xl font-bold text-navy-800">{lv === "ADVANCED_DIPLOMA" ? "Advanced Diploma" : lv === "DIPLOMA" ? "Diploma" : "Certificate"}</h3>
                 <ul className="mt-3 space-y-1.5 text-sm">
@@ -104,7 +104,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <section className="bg-navy-800 text-white">
+      <section className="bg-gradient-to-br from-navy-900 via-violet-900 to-royal-700 text-white">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[1.3fr_1fr]">
           <div>
             <h2 className="font-display text-3xl font-bold">{home.hubTitle}</h2>
@@ -142,7 +142,7 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <section className="bg-gold-50">
+      <section data-sec="plain">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-5 px-4 py-12 sm:px-6 md:flex-row md:items-center">
           <div>
             <h2 className="font-display text-2xl font-bold text-navy-800">{home.ctaTitle}</h2>

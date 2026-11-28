@@ -9,9 +9,9 @@ export const cx = clsx;
 const btnBase =
   "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-55 select-none whitespace-nowrap";
 const btnVariants = {
-  primary: "bg-royal-600 text-white shadow-sm hover:bg-royal-700 active:bg-navy-700",
-  navy: "bg-navy-800 text-white shadow-sm hover:bg-navy-700",
-  gold: "bg-gold-500 text-navy-900 shadow-sm hover:bg-gold-400",
+  primary: "bg-gradient-to-r from-royal-600 to-violet-600 text-white shadow-sm hover:from-royal-700 hover:to-violet-700",
+  navy: "bg-gradient-to-r from-navy-800 to-royal-700 text-white shadow-sm hover:from-navy-700 hover:to-royal-600",
+  gold: "bg-gradient-to-r from-amber-300 to-gold-500 text-navy-900 shadow-sm hover:from-amber-200 hover:to-gold-400",
   secondary: "bg-white text-navy-800 ring-1 ring-inset ring-line hover:bg-royal-50",
   ghost: "text-navy-800 hover:bg-royal-50",
   danger: "bg-danger-600 text-white hover:bg-red-700",
@@ -134,7 +134,8 @@ export function Alert({ tone = "info", title, children, className }: { tone?: ke
 
 export function PageHeader({ title, description, actions, eyebrow, breadcrumbs }: { title: ReactNode; description?: ReactNode; actions?: ReactNode; eyebrow?: ReactNode; breadcrumbs?: { href?: string; label: string }[] }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="relative mb-6 flex flex-col gap-4 overflow-hidden rounded-3xl bg-gradient-to-r from-royal-100 via-violet-100 to-amber-100 p-5 shadow-card ring-1 ring-white sm:flex-row sm:items-end sm:justify-between">
+      <span className="rainbow-bar absolute inset-x-0 top-0 h-1.5" aria-hidden />
       <div className="min-w-0">
         {breadcrumbs && (
           <nav aria-label="Breadcrumb" className="mb-2 text-xs text-muted">
@@ -168,18 +169,18 @@ export function PageHeader({ title, description, actions, eyebrow, breadcrumbs }
 /* -------------------------------------------------------------- Stat */
 
 export function Stat({ label, value, hint, icon, tone = "royal" }: { label: string; value: ReactNode; hint?: ReactNode; icon?: ReactNode; tone?: "royal" | "gold" | "green" | "red" | "navy" }) {
-  const tones = { royal: "bg-royal-50 text-royal-600", gold: "bg-gold-100 text-gold-600", green: "bg-success-50 text-success-600", red: "bg-danger-50 text-danger-600", navy: "bg-navy-800 text-white" };
+  const tones = { royal: "from-royal-600 to-violet-700", gold: "from-amber-700 to-orange-800", green: "from-emerald-700 to-teal-800", red: "from-rose-600 to-pink-800", navy: "from-navy-800 to-royal-700" };
   return (
-    <Card className={cx("border-t-4 p-4 sm:p-5", { royal: "border-t-royal-500", gold: "border-t-gold-500", green: "border-t-emerald-500", red: "border-t-rose-500", navy: "border-t-navy-700" }[tone])}>
+    <div className={cx("rounded-2xl bg-gradient-to-br p-4 text-white shadow-card print-card sm:p-5", tones[tone])}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
-          <p className="mt-1.5 text-2xl font-extrabold tabular-nums text-navy-800">{value}</p>
-          {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
+          <p className="text-xs font-semibold uppercase tracking-wide text-white/85">{label}</p>
+          <p className="mt-1.5 text-2xl font-extrabold tabular-nums">{value}</p>
+          {hint && <p className="mt-1 text-xs text-white/85">{hint}</p>}
         </div>
-        {icon && <span className={cx("grid size-10 shrink-0 place-items-center rounded-xl", tones[tone])}>{icon}</span>}
+        {icon && <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/20">{icon}</span>}
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -206,7 +207,7 @@ export function Table({ children, className }: { children: ReactNode; className?
   );
 }
 export function Th({ children, className }: { children?: ReactNode; className?: string }) {
-  return <th className={cx("whitespace-nowrap border-b border-line bg-surface px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-muted", className)}>{children}</th>;
+  return <th className={cx("whitespace-nowrap border-b border-royal-100 bg-gradient-to-b from-royal-50 to-violet-100 px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-navy-800", className)}>{children}</th>;
 }
 export function Td({ children, className, colSpan }: { children?: ReactNode; className?: string; colSpan?: number }) {
   return (

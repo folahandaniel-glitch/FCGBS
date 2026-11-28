@@ -14,7 +14,8 @@ export async function SiteHeader() {
   return (
     <>
       {brand.site.announcementBar && <div className="bg-navy-900 px-4 py-2 text-center text-xs font-semibold text-gold-400 sm:text-sm">{brand.site.announcementBar}</div>}
-      <header className="sticky top-0 z-50 border-b border-line/80 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-50 bg-gradient-to-r from-amber-50 via-white to-violet-100 shadow-card">
+        <div className="rainbow-bar h-1" aria-hidden />
         <div className="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <BrandLockup markUrl={brand.markUrl} name={brand.name} short={brand.shortName} subtitle="Christian Global Bible School" />
           <div className="hidden items-center gap-2 xl:flex">
@@ -25,9 +26,9 @@ export async function SiteHeader() {
           <Link href="/backend" prefetch={false} className="ml-auto inline-flex h-11 items-center gap-1.5 whitespace-nowrap rounded-xl bg-navy-800 px-3 text-xs font-bold text-white xl:hidden"><LayoutDashboard className="size-4 text-gold-400" aria-hidden />{nav.backendLabel}</Link>
           <MobileNav links={[{ href: "/", label: "Home" }, ...items, { href: "/verify", label: "Verify a Certificate" }, { href: "/faq", label: "FAQs" }, { href: "/contact", label: "Contact" }]} />
         </div>
-        <nav aria-label="Primary" className="mx-auto hidden max-w-7xl flex-wrap items-center justify-center gap-0.5 border-t border-line/60 px-4 py-1 xl:flex">
+        <nav aria-label="Primary" className="menu-strip hidden flex-wrap items-center justify-center gap-0.5 bg-gradient-to-r from-navy-900 via-violet-900 to-royal-700 px-4 py-1 xl:flex">
           {items.map((l) => (
-            <Link key={l.href} href={l.href} prefetch={false} className="whitespace-nowrap rounded-lg px-2.5 py-2 text-[0.82rem] font-semibold text-navy-800/85 hover:bg-royal-50 hover:text-royal-700">
+            <Link key={l.href} href={l.href} prefetch={false} className="whitespace-nowrap rounded-lg px-2.5 py-2 text-[0.82rem] font-semibold text-white hover:text-white">
               {l.label}
             </Link>
           ))}
@@ -53,7 +54,8 @@ export async function SiteFooter() {
     </div>
   );
   return (
-    <footer className="bg-navy-900 text-white/80">
+    <footer className="bg-gradient-to-br from-navy-950 via-violet-950 to-navy-800 text-white/80">
+      <div className="rainbow-bar h-1.5" aria-hidden />
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">

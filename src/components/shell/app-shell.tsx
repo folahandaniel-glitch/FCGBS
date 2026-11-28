@@ -65,7 +65,7 @@ export function AppShell({
           <p className="truncate text-[0.6rem] font-semibold tracking-[0.18em] text-gold-400">{roleLabel}</p>
         </div>
       </div>
-      <nav aria-label="Main" className="no-scrollbar flex-1 overflow-y-auto px-3 py-4">
+      <nav aria-label="Main" className="side-nav no-scrollbar flex-1 overflow-y-auto px-3 py-4">
         {groups.map((g, gi) => (
           <div key={gi} className={cx(gi > 0 && "mt-5")}>
             {g.title && <p className="mb-1.5 px-3 text-[0.64rem] font-bold uppercase tracking-[0.16em] text-white/40">{g.title}</p>}
@@ -80,10 +80,10 @@ export function AppShell({
                       aria-current={active ? "page" : undefined}
                       className={cx(
                         "group flex items-center gap-3 rounded-xl px-3 py-2 text-[0.86rem] font-semibold transition-colors",
-                        active ? "bg-white text-navy-800 shadow-sm" : "text-white/75 hover:bg-white/10 hover:text-white",
+                        active ? "bg-gradient-to-r from-amber-300 to-gold-400 text-navy-900 shadow-sm" : "text-white/80 hover:bg-white/10 hover:text-white",
                       )}
                     >
-                      <span aria-hidden className={cx("shrink-0 [&>svg]:size-[1.1rem]", active ? "text-royal-600" : "text-white/55 group-hover:text-gold-400")}>
+                      <span aria-hidden className={cx("shrink-0 [&>svg]:size-[1.1rem]", active ? "text-navy-900" : "group-hover:text-gold-400")}>
                         {it.icon}
                       </span>
                       <span className="flex-1 truncate">{it.label}</span>
@@ -106,19 +106,19 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-dvh bg-surface">
-      <aside className="no-print fixed inset-y-0 left-0 z-40 hidden w-64 bg-navy-800 lg:block">{sidebar}</aside>
+    <div className="min-h-dvh">
+      <aside className="no-print fixed inset-y-0 left-0 z-40 hidden w-64 bg-gradient-to-b from-navy-900 via-violet-950 to-navy-800 lg:block">{sidebar}</aside>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button aria-label="Close menu" className="absolute inset-0 bg-navy-950/60" onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 w-[17rem] max-w-[85%] bg-navy-800 shadow-lift">{sidebar}</aside>
+          <aside className="absolute inset-y-0 left-0 w-[17rem] max-w-[85%] bg-gradient-to-b from-navy-900 via-violet-950 to-navy-800 shadow-lift">{sidebar}</aside>
           <button aria-label="Close menu" onClick={() => setOpen(false)} className="absolute left-[min(17rem,85%)] top-3 ml-2 grid size-10 place-items-center rounded-xl bg-white text-navy-800">
             <X className="size-5" />
           </button>
         </div>
       )}
       <div className="lg:pl-64 print:pl-0">
-        <header className="no-print sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-white/95 px-4 backdrop-blur sm:px-6">
+        <header className="no-print sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white bg-gradient-to-r from-royal-100/95 via-violet-100/95 to-amber-100/95 px-4 shadow-card backdrop-blur sm:px-6">
           <button type="button" className="grid size-10 place-items-center rounded-xl ring-1 ring-line lg:hidden" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
             <Menu className="size-5" />
           </button>
