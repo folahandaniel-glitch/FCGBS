@@ -5,6 +5,7 @@ import { can, isStaffType, type Permission, type SuperCapability } from "@/core/
 import { getBrand } from "@/server/brand";
 import { getSession } from "@/server/http";
 import { unreadCount } from "@/server/services/notifications";
+import { isDeveloper } from "@/server/services/developer";
 import { logoutAction } from "../(auth)/actions";
 
 type Item = { href: string; label: string; icon: React.ReactNode; perm?: (Permission | SuperCapability)[] };
@@ -64,10 +65,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!isStaffType(s.user.userType)) redirect(s.user.userType === "APPLICANT" ? "/apply" : "/student");
   const [brand, unread] = await Promise.all([getBrand(), unreadCount(s.user.id)]);
   const groups: NavGroup[] = GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => !i.perm || i.perm.some((p) => can(s.actor, p))).map((i) => ({ href: i.href, label: i.label, icon: i.icon })) })).filter((g) => g.items.length);
+  const developer = await isDeveloper(s.user.id);
+  if (developer) groups.unshift({ title: "Owner", items: [{ href: "/admin/developer", label: "Developer console", icon: <KeyRound /> }] });
   // Lecturers get a link to their teaching portal.
   if (can(s.actor, "teaching.own") || can(s.actor, "teaching.any")) groups.splice(1, 0, { title: "Teaching", items: [{ href: "/teach", label: "My teaching portal", icon: <GraduationCap /> }] });
   return (
-    <AppShell groups={groups} root="/admin" markUrl={brand.markUrl} user={{ name: s.actor.name, email: s.actor.email }} roleLabel={s.user.userType === "SUPER_ADMIN" ? "SUPER ADMIN" : "ADMINISTRATION"} unread={unread} logout={logoutAction} searchable>
+    <AppShell groups={groups} root="/admin" markUrl={brand.markUrl} user={{ name: s.actor.name, email: s.actor.email }} roleLabel={developer ? "DEVELOPER" : s.user.userType === "SUPER_ADMIN" ? "SUPER ADMIN" : "ADMINISTRATION"} unread={unread} logout={logoutAction} searchable>
       {children}
     </AppShell>
   );

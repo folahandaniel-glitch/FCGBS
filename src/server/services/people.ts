@@ -62,8 +62,9 @@ export async function setAccountStatus(actor: Actor, userId: string, status: "AC
 
 export async function adminResetLink(actor: Actor, userId: string, ctx: ReqCtx) {
   if (!can(actor, "users.manage")) throw new AppError("FORBIDDEN", "You do not have permission to do that.");
-  const [u] = await getDb().select({ type: s.users.userType }).from(s.users).where(eq(s.users.id, userId));
+  const [u] = await getDb().select({ type: s.users.userType, dev: s.users.isDeveloper }).from(s.users).where(eq(s.users.id, userId));
   if (!u) throw new AppError("NOT_FOUND", "User not found.");
+  if (u.dev && actor.id !== userId) throw new AppError("FORBIDDEN", "Only the Developer can reset the Developer account.");
   if (u.type === "SUPER_ADMIN" && !can(actor, "super.accounts")) throw new AppError("FORBIDDEN", "You cannot reset the Super Admin.");
   const { url } = await issueResetToken(userId, actor.id, 60);
   await audit({ actor, action: "user.reset_link_issued", entityType: "user", entityId: userId }, ctx);
@@ -93,7 +94,7 @@ export async function createRole(actor: Actor, key: string, name: string, descri
 
 export async function listStaff() {
   const rows = await getDb()
-    .select({ id: s.users.id, email: s.users.email, first: s.users.firstName, last: s.users.lastName, status: s.users.status, type: s.users.userType, lastLogin: s.users.lastLoginAt, totp: s.users.totpEnabled, title: s.staffProfiles.title, dept: s.departments.name })
+    .select({ id: s.users.id, email: s.users.email, first: s.users.firstName, last: s.users.lastName, status: s.users.status, type: s.users.userType, dev: s.users.isDeveloper, lastLogin: s.users.lastLoginAt, totp: s.users.totpEnabled, title: s.staffProfiles.title, dept: s.departments.name })
     .from(s.users)
     .leftJoin(s.staffProfiles, eq(s.staffProfiles.userId, s.users.id))
     .leftJoin(s.departments, eq(s.departments.id, s.staffProfiles.departmentId))

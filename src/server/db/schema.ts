@@ -91,6 +91,8 @@ export const users = pgTable(
     email: text("email").notNull(),
     passwordHash: text("password_hash").notNull(),
     userType: userTypeEnum("user_type").notNull(),
+    /** The platform owner: a Super Admin who alone manages other Super Admins and cannot be changed by them. */
+    isDeveloper: boolean("is_developer").notNull().default(false),
     status: accountStatusEnum("status").notNull().default("ACTIVE"),
     firstName: text("first_name").notNull(),
     lastName: text("last_name").notNull(),

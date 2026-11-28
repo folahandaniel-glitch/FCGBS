@@ -22,7 +22,7 @@ export default async function FacultyAdmin() {
         <Table><thead><tr><Th>Name</Th><Th>Appointment</Th><Th>Roles</Th><Th>Status</Th><Th>2FA</Th><Th /></tr></thead><tbody>
           {staff.map((u) => (
             <tr key={u.id}><Td>{u.title} {u.first} {u.last}<span className="block text-xs text-muted">{u.email}</span></Td><Td className="text-xs">{u.dept ?? "—"}</Td>
-              <Td className="min-w-64 text-xs">{u.type === "SUPER_ADMIN" ? <Badge tone="gold">Super Admin</Badge> : roleAdmin ? <RoleChooser userId={u.id} roles={roles} current={u.roles.map((r) => r.key)} /> : u.roles.map((r) => <Badge key={r.key} tone="blue" className="mr-1">{r.name}</Badge>)}</Td>
+              <Td className="min-w-64 text-xs">{u.type === "SUPER_ADMIN" ? <Badge tone="gold">{u.dev ? "Developer" : "Super Admin"}</Badge> : roleAdmin ? <RoleChooser userId={u.id} roles={roles} current={u.roles.map((r) => r.key)} /> : u.roles.map((r) => <Badge key={r.key} tone="blue" className="mr-1">{r.name}</Badge>)}</Td>
               <Td><StatusBadge status={u.status} /></Td><Td>{u.totp ? <Badge tone="green">on</Badge> : <Badge>off</Badge>}</Td>
               <Td className="space-y-1">{manage && u.type !== "SUPER_ADMIN" && <><ResetLink userId={u.id} />{u.status === "ACTIVE" ? <Confirm label="Suspend" title="Suspend this account?" reason variant="danger-outline" run={async ({ reason }) => { "use server"; return accountStatusAction(u.id, "SUSPENDED", reason); }} /> : <Confirm label="Reactivate" title="Reactivate this account?" reason confirmVariant="primary" run={async ({ reason }) => { "use server"; return accountStatusAction(u.id, "ACTIVE", reason); }} />}</>}</Td></tr>
           ))}

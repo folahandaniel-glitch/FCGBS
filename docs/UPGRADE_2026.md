@@ -41,6 +41,10 @@ All new content states where Christians differ and avoids unsupported archaeolog
 - **Admin → Upload centre** (`/admin/upload-centre`): download a template that is rebuilt from the live site each time (it lists every place a file can go), fill it or skip it, then upload the template and all files in one go. The importer reads any column order or naming, matches misspelt places and file names, adds `https://`, turns YouTube/Vimeo links into embeds, fixes wrong types, makes titles from file names, places loose files by their names, skips duplicates, and keeps anything it cannot place as a Draft ("Waiting to be placed") so nothing is lost. A report shows what was fixed and where each item went. Logic: `src/core/attachments.ts` (pure, unit-tested) and `src/server/services/attachments.ts`.
 - Limit: the host accepts about 4 MB per upload request; larger audio or slides go in as links.
 
+## Developer account
+
+The owner's Super Admin account (the address in `SUPERADMIN_EMAIL`, or the built-in owner default) carries `users.is_developer` (migration 0007; assigned once by the seed on deploy). Admin > Developer console: add Super Admins and Admins, promote or demote, suspend, new password, reset two-factor, system health. Only the Developer manages Super Admins; nobody else can reset or suspend the Developer. Every action is audited.
+
 ## BackEnd button; spiritual warfare, spirit-soul-body, marriage and Melchizedek
 
 - A visible **BackEnd** button is in the site header on every screen size (label editable: Website content > Main menu & header buttons). On wide screens the menu now sits on its own row so it no longer squeezes the logo.

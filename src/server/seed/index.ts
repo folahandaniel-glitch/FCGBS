@@ -9,6 +9,7 @@ import { MATERIALS } from "@/content/materials";
 import { QUESTIONS_SEED } from "@/content/questions";
 import { QUESTION_REVISIONS } from "@/content/questions/revisions";
 import { createHash } from "node:crypto";
+import { ensureDeveloper } from "../services/developer";
 import { FAQS, POLICIES } from "@/content/policies";
 import { TEACHINGS, TRACKS } from "@/content/teachings";
 import type { DB } from "../db";
@@ -254,6 +255,8 @@ export async function seedStructure(db: DB) {
     });
     for (let i = 0; i < rows.length; i += 50) await db.insert(s.libraryResources).values(rows.slice(i, i + 50));
   }
+  // ---- the owner's Super Admin account becomes the Developer (once)
+  await ensureDeveloper();
   void inArray;
   void sql;
 }

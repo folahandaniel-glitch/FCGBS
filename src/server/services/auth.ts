@@ -267,11 +267,11 @@ export async function bootstrapSuperAdmin(raw: unknown, ctx: ReqCtx) {
     let uid: string;
     if (taken) {
       // The setup key proves ownership of the platform: an applicant account on the owner e-mail is taken over.
-      await tx.update(users).set({ userType: "SUPER_ADMIN", passwordHash, status: "ACTIVE", totpEnabled: false, totpSecretEnc: null, failedLoginCount: 0, lockedUntil: null, deletedAt: null, passwordChangedAt: new Date(), updatedAt: new Date() }).where(eq(users.id, taken.id));
+      await tx.update(users).set({ userType: "SUPER_ADMIN", isDeveloper: true, passwordHash, status: "ACTIVE", totpEnabled: false, totpSecretEnc: null, failedLoginCount: 0, lockedUntil: null, deletedAt: null, passwordChangedAt: new Date(), updatedAt: new Date() }).where(eq(users.id, taken.id));
       await tx.delete(userRoles).where(eq(userRoles.userId, taken.id));
       uid = taken.id;
     } else {
-      [{ id: uid }] = await tx.insert(users).values({ email: input.email, passwordHash, userType: "SUPER_ADMIN", firstName, lastName, passwordChangedAt: new Date() }).returning({ id: users.id });
+      [{ id: uid }] = await tx.insert(users).values({ email: input.email, passwordHash, userType: "SUPER_ADMIN", isDeveloper: true, firstName, lastName, passwordChangedAt: new Date() }).returning({ id: users.id });
     }
     await audit({ actor: { id: uid, userType: "SUPER_ADMIN" }, action: "security.super_admin_created", entityType: "user", entityId: uid, summary: "Super Admin created via secure setup" }, ctx, tx);
     return uid;
